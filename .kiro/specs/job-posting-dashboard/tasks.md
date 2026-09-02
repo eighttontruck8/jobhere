@@ -63,7 +63,7 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
     - **Validates: Requirements 3.3**
     - 최소 100회 반복
 
-- [ ] 3. 순수 유틸리티 — 검증 및 적합도 계산
+- [x] 3. 순수 유틸리티 — 검증 및 적합도 계산
   - [x] 3.1 validateProfile 순수 함수 구현
     - languageScore 정수 0~990, koreanHistoryGrade 정수 1~6, certifications 항목당 ≤100자·최대 50개
     - 위반 시 위반 필드 식별하는 ValidationResult 반환
@@ -74,13 +74,13 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
     - **Validates: Requirements 6.2**
     - 최소 100회 반복
 
-  - [ ] 3.3 computeFit 순수 함수 구현
+  - [x] 3.3 computeFit 순수 함수 구현
     - 필수(REQUIRED) criterion만 대상, 필수 없으면 computable=false
     - 대응 점수 없음 → 미충족 + missing, 점수 ≥ cutoff → 충족, 미만 → 미충족(한국사 등급 매핑 포함)
     - passLikelihoodPercent = round(satisfied / total × 100), 0~100
     - _Requirements: 7.2, 7.3, 7.4, 7.6_
 
-  - [ ]* 3.4 computeFit property test
+  - [x]* 3.4 computeFit property test
     - **Feature: job-posting-dashboard, Property 21: 충족/미충족 판정 — For any cutoff가 정의된 필수 Criterion과 대응 Credential_Profile 점수에 대해, 점수가 cutoff 이상이면 "충족", 미만이면 "미충족"으로 판정되어야 한다.**
     - **Validates: Requirements 7.2**
     - **Feature: job-posting-dashboard, Property 22: 합격 가능성 비율 — For any 산출된 Fit_Result에 대해, 합격 가능성은 `충족한 필수 Criterion 수 / 전체 필수 Criterion 수 × 100`과 같으며 0~100 범위 안에 있어야 한다.**
@@ -89,7 +89,7 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
     - **Validates: Requirements 7.4**
     - 최소 100회 반복
 
-- [ ] 4. 체크포인트 — 순수 로직 검증
+- [x] 4. 체크포인트 — 순수 로직 검증
   - 모든 테스트가 통과하는지 확인하고, 의문이 생기면 사용자에게 질문한다.
 
 - [ ] 5. 통합 표(Evaluation_Criteria_Table) 순수 로직
