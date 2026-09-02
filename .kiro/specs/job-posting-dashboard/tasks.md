@@ -146,15 +146,15 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
   - 모든 테스트가 통과하는지 확인하고, 의문이 생기면 사용자에게 질문한다.
 
 - [ ] 8. 서비스 계층 구현 (Prisma 연동)
-  - [ ] 8.1 PostingService 구현
+  - [x] 8.1 PostingService 구현
     - listPostings(최신순), listPrivatePostings(마감 오름차순), savePosting(draft 저장)을 순수 정렬 함수와 Prisma로 조합
     - _Requirements: 1.1, 3.3, 5.4_
 
-  - [ ]* 8.2 PostingService 단위 테스트
+  - [x]* 8.2 PostingService 단위 테스트
     - 목록 조회 실패 시 오류 처리(R1.5), 빈 상태(R1.3, R3.4), DB 저장 실패 draft 유지(R5.5) 케이스 (Prisma mock)
     - _Requirements: 1.3, 1.5, 3.4, 5.5_
 
-  - [ ] 8.3 TableService 구현
+  - [x] 8.3 TableService 구현
     - buildEvaluationTable(순수 통합 로직 + Prisma 조회), addToTable(순수 함수 위임)
     - _Requirements: 2.1, 2.7, 2.9, 2.10_
 
@@ -204,7 +204,7 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
   - 모든 테스트가 통과하는지 확인하고, 의문이 생기면 사용자에게 질문한다.
 
 - [ ] 11. Route Handlers 구현
-  - [ ] 11.1 공고 조회/저장 Route Handlers
+  - [x] 11.1 공고 조회/저장 Route Handlers
     - GET `/api/postings`(목록), POST `/api/postings`(검토 완료 저장), GET `/api/postings/table`(통합 표)
     - 입력 검증·서비스 호출·응답 직렬화, 오류 결과 타입 → HTTP 응답 매핑(R1.5, R2.10, R5.3, R5.5)
     - _Requirements: 1.1, 1.5, 2.1, 2.7, 2.9, 2.10, 5.3, 5.4, 5.5_

@@ -29,6 +29,13 @@ npm run db:migrate
 - `/postings/add`: 링크·이미지 공고 분석
 - `/postings/review`: 분석 결과 검토·저장
 
+## 공고 API
+
+- `GET /api/postings`: 전체 공고 최신순 조회
+- `GET /api/postings?view=private`: 사기업 공고 마감순 조회
+- `POST /api/postings`: 검토 완료 공고 저장
+- `GET /api/postings/table?category=개발`: 공기업 평가 기준표 조회
+
 ## 검증
 
 ```bash
