@@ -6,7 +6,7 @@
   - 완료 조건: `/dashboard`, `/profile`, `/postings/add`, `/postings/review` 빌드 성공
 - [x] 2. Vitest + fast-check 테스트 실행 환경 구성
   - 완료 조건: 예제 단위 테스트와 property test 통과
-- [ ] 3. Prisma + PostgreSQL 연결 설정 및 데이터 모델 정의
+- [x] 3. Prisma + PostgreSQL 연결 설정 및 데이터 모델 정의
   - 완료 조건: Prisma 스키마 검증과 Client 생성 성공
 - [ ] 4. 공고·평가기준·프로필 도메인 타입 정의
   - 완료 조건: TypeScript 타입 검사 통과

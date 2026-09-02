@@ -2,16 +2,24 @@
   "name": "job-posting-dashboard",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest --run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "db:validate": "prisma validate",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "7.10.0",
+    "@prisma/client": "7.10.0",
+    "dotenv": "^17.4.2",
     "next": "16.3.4",
+    "pg": "^8.23.0",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
@@ -19,6 +27,7 @@
     "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "^16.3.3",
     "@types/node": "^20",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.1.1",
@@ -26,6 +35,7 @@
     "eslint-config-next": "16.3.4",
     "fast-check": "^4.9.0",
     "jsdom": "^30.0.1",
+    "prisma": "7.10.0",
     "typescript": "^5",
     "vitest": "^4.1.11"
   }

@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum EnterpriseType {
+  PUBLIC
+  PRIVATE
+}
+
+enum PostingSource {
+  CRAWLED
+  USER
+}
+
+enum CriterionType {
+  LANGUAGE
+  KOREAN_HISTORY
+  OTHER_CERT
+}
+
+enum RequiredFlag {
+  REQUIRED
+  OPTIONAL
+}
+
+model JobPosting {
+  id             String                @id @default(cuid())
+  enterpriseType EnterpriseType
+  company        String?
+  jobRole        String?
+  title          String
+  deadline       DateTime?
+  jobCategory    String?
+  source         PostingSource         @default(CRAWLED)
+  createdAt      DateTime              @default(now())
+  criteria       EvaluationCriterion[]
+
+  @@index([enterpriseType, createdAt])
+  @@index([deadline])
+  @@index([jobCategory])
+}
+
+model EvaluationCriterion {
+  id              String        @id @default(cuid())
+  postingId       String
+  posting         JobPosting    @relation(fields: [postingId], references: [id], onDelete: Cascade)
+  type            CriterionType
+  requiredFlag    RequiredFlag
+  cutoffScore     Int?
+  acceptableCerts String[]      @default([])
+
+  @@unique([postingId, type])
+  @@index([postingId])
+}
+
+model CredentialProfile {
+  id                  String   @id @default("singleton")
+  languageScore       Int?
+  koreanHistoryGrade  Int?
+  certifications      String[] @default([])
+  updatedAt           DateTime @updatedAt
+}

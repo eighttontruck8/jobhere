@@ -15,13 +15,13 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
 
 ## Tasks
 
-- [ ] 1. 프로젝트 스캐폴딩 및 기반 설정
+- [x] 1. 프로젝트 스캐폴딩 및 기반 설정
   - [x] 1.1 Next.js(App Router) + TypeScript 프로젝트 초기화
     - `create-next-app`으로 App Router + TypeScript 프로젝트 생성, ESLint/tsconfig 구성
     - `app/` 기본 라우트 구조 생성(`app/dashboard`, `app/profile`, `app/postings/add`, `app/postings/review` 디렉터리 placeholder)
     - _Requirements: 1.1_
 
-  - [ ] 1.2 Prisma + PostgreSQL 데이터 계층 설정 및 스키마 정의
+  - [x] 1.2 Prisma + PostgreSQL 데이터 계층 설정 및 스키마 정의
     - Prisma 설치·초기화, `DATABASE_URL` 환경변수 구성(`.env`, `.env.example`)
     - `prisma/schema.prisma`에 enum(EnterpriseType, PostingSource, CriterionType, RequiredFlag) 및 모델(JobPosting, EvaluationCriterion, CredentialProfile) 정의
     - CredentialProfile.id 고정 상수(`"singleton"`)로 단일 프로필 보장

@@ -10,6 +10,18 @@ npm run dev
 
 브라우저에서 [http://localhost:3000](http://localhost:3000)을 엽니다. 루트 경로는 `/dashboard`로 이동합니다.
 
+## 데이터베이스 준비
+
+`.env.example`을 `.env`로 복사하고 `DATABASE_URL`을 사용할 PostgreSQL 연결 문자열로 변경합니다.
+
+```bash
+npm run db:validate
+npm run db:generate
+npm run db:migrate
+```
+
+`db:migrate`는 연결된 PostgreSQL에 마이그레이션을 적용합니다.
+
 ## MVP 화면 경로
 
 - `/dashboard`: 채용 공고 대시보드
@@ -22,5 +34,6 @@ npm run dev
 ```bash
 npm run lint
 npm run test
+npm run db:validate
 npm run build
 ```
