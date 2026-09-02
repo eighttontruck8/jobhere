@@ -46,8 +46,24 @@ export interface JobPostingDraft {
 }
 
 export interface EvaluationTable {
-  rows: JobPosting[];
+  rows: EvaluationTableRow[];
   filter: JobCategory | null;
+}
+
+export interface EvaluationCriterionCell {
+  type: CriterionType;
+  requiredFlag: RequiredFlag | null;
+  cutoffScore: number | null;
+  acceptableCerts: string[];
+  displayValue: string;
+}
+
+export interface EvaluationTableRow {
+  postingId: string;
+  company: string | null;
+  jobRole: string | null;
+  jobCategory: JobCategory | null;
+  criteria: Record<CriterionType, EvaluationCriterionCell>;
 }
 
 export type AddResult =

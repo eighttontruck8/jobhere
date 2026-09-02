@@ -92,13 +92,13 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
 - [x] 4. 체크포인트 — 순수 로직 검증
   - 모든 테스트가 통과하는지 확인하고, 의문이 생기면 사용자에게 질문한다.
 
-- [ ] 5. 통합 표(Evaluation_Criteria_Table) 순수 로직
-  - [ ] 5.1 통합 표 구성 순수 함수 구현
+- [x] 5. 통합 표(Evaluation_Criteria_Table) 순수 로직
+  - [x] 5.1 통합 표 구성 순수 함수 구현
     - 공기업(PUBLIC)만 대상, category 필터 적용, 상위 20행 상한 구성
     - 필수: cutoffScore 표시/null 대체 표시, 선택: acceptableCerts 표시/빈 목록 대체 표시
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8_
 
-  - [ ]* 5.2 통합 표 구성 property test
+  - [x]* 5.2 통합 표 구성 property test
     - **Feature: job-posting-dashboard, Property 4: 통합 표 행 수 상한 — For any 공기업 공고 집합에 대해, Evaluation_Criteria_Table의 행 수는 `min(공기업 공고 수, 20)`을 초과하지 않아야 한다.**
     - **Validates: Requirements 2.1**
     - **Feature: job-posting-dashboard, Property 5: Required_Flag 표시 정확성 — For any Criterion에 대해, 표에 표시되는 플래그는 {필수, 선택} 중 정확히 하나이며 해당 Criterion의 `requiredFlag`와 일치해야 한다.**
@@ -107,11 +107,11 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
     - **Validates: Requirements 2.7**
     - 최소 100회 반복
 
-  - [ ] 5.3 addToTable 수동 추가 순수 함수 구현
+  - [x] 5.3 addToTable 수동 추가 순수 함수 구현
     - 중복 postingId 거부, 20개 한도 초과 거부, 그 외 추가하고 AddResult 반환
     - _Requirements: 2.9, 2.10_
 
-  - [ ]* 5.4 addToTable property test
+  - [x]* 5.4 addToTable property test
     - **Feature: job-posting-dashboard, Property 7: 표 수동 추가 멤버십 — For any 표에 없고 한도(20) 미만인 유효한 공고에 대해, 수동 추가 후 그 공고는 표에 포함되고 행 수는 정확히 1 증가해야 한다.**
     - **Validates: Requirements 2.9**
     - **Feature: job-posting-dashboard, Property 8: 표 추가 거부 규칙 — For any 추가 시도에 대해, 그 공고가 이미 표에 포함되어 있거나 추가 시 20개 한도를 초과한다면 추가는 거부되고 표의 행 수는 변하지 않으며 거부 사유가 제공되어야 한다.**

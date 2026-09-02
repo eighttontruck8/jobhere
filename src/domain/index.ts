@@ -1,4 +1,5 @@
 export * from "./constants";
+export * from "./evaluation-table";
 export * from "./fit";
 export * from "./fit-calculation";
 export * from "./job-posting";
