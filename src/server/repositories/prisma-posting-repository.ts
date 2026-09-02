@@ -39,6 +39,15 @@ export class PrismaPostingRepository implements PostingRepository {
     return postings.map(toDomainPosting);
   }
 
+  async findById(id: string): Promise<JobPosting | null> {
+    const posting = await this.client.jobPosting.findUnique({
+      where: { id },
+      include: { criteria: true },
+    });
+
+    return posting ? toDomainPosting(posting) : null;
+  }
+
   async create(draft: JobPostingDraft): Promise<JobPosting> {
     const posting = await this.client.jobPosting.create({
       data: {

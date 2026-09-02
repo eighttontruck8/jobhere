@@ -145,7 +145,7 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
 - [ ] 7. 체크포인트 — 표/엔진 순수 로직 검증
   - 모든 테스트가 통과하는지 확인하고, 의문이 생기면 사용자에게 질문한다.
 
-- [ ] 8. 서비스 계층 구현 (Prisma 연동)
+- [x] 8. 서비스 계층 구현 (Prisma 연동)
   - [x] 8.1 PostingService 구현
     - listPostings(최신순), listPrivatePostings(마감 오름차순), savePosting(draft 저장)을 순수 정렬 함수와 Prisma로 조합
     - _Requirements: 1.1, 3.3, 5.4_
@@ -158,22 +158,22 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
     - buildEvaluationTable(순수 통합 로직 + Prisma 조회), addToTable(순수 함수 위임)
     - _Requirements: 2.1, 2.7, 2.9, 2.10_
 
-  - [ ] 8.4 ProfileService 구현
+  - [x] 8.4 ProfileService 구현
     - getProfile(singleton 조회, 미존재 시 null), saveProfile(validateProfile 후 upsert, 위반 시 기존 값 유지)
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5_
 
-  - [ ]* 8.5 ProfileService round-trip / 미존재 테스트
+  - [x]* 8.5 ProfileService round-trip / 미존재 테스트
     - **Feature: job-posting-dashboard, Property 19: 자격 프로필 왕복(round-trip) — For any 유효 범위 내의 Credential_Profile 입력에 대해, 저장 후 조회하면 저장한 어학 점수·한국사 등급·자격증 항목과 동일한 값을 반환해야 한다.**
     - **Validates: Requirements 6.1**
     - 프로필 미존재 안내(R6.5) 단위 테스트 포함
     - 최소 100회 반복
     - _Requirements: 6.5_
 
-  - [ ] 8.6 FitService 구현
+  - [x] 8.6 FitService 구현
     - computeFit 순수 함수 위임, 프로필 미존재 안내(R7.5), 필수 cutoff 미정의 안내(R7.6)
     - _Requirements: 7.1, 7.5, 7.6_
 
-  - [ ]* 8.7 FitService 단위 테스트
+  - [x]* 8.7 FitService 단위 테스트
     - 프로필 미존재 안내(R7.5), cutoff 미정의 안내(R7.6) 케이스
     - _Requirements: 7.5, 7.6_
 
@@ -213,7 +213,7 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
     - POST `/api/analyze`: 입력 검증 후 AnalysisEngine 호출, 실패 시 원본 소스 보존 응답(R4.6, R4.7, R4.8)
     - _Requirements: 4.1, 4.2, 4.6, 4.7, 4.8_
 
-  - [ ] 11.3 프로필/적합도 Route Handlers
+  - [x] 11.3 프로필/적합도 Route Handlers
     - GET/PUT `/api/profile`(조회/저장), GET `/api/postings/:id/fit`(적합도 계산)
     - _Requirements: 6.1, 6.2, 6.4, 6.5, 7.1, 7.5, 7.6_
 

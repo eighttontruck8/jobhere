@@ -34,6 +34,7 @@ describe("TableService", () => {
         createPosting("private", EnterpriseType.PRIVATE, "개발"),
         createPosting("other", EnterpriseType.PUBLIC, "기획"),
       ]),
+      findById: vi.fn(async () => null),
       create: vi.fn(),
     };
 

@@ -35,6 +35,9 @@ npm run db:migrate
 - `GET /api/postings?view=private`: 사기업 공고 마감순 조회
 - `POST /api/postings`: 검토 완료 공고 저장
 - `GET /api/postings/table?category=개발`: 공기업 평가 기준표 조회
+- `GET /api/profile`: 단일 자격 프로필 조회
+- `PUT /api/profile`: 자격 프로필 저장·수정
+- `GET /api/postings/:id/fit`: 공고 적합도 계산
 
 ## 검증
 

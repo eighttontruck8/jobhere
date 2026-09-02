@@ -44,6 +44,9 @@ function createDraft(): JobPostingDraft {
 function createRepository(postings: JobPosting[] = []) {
   return {
     findAll: vi.fn(async () => postings),
+    findById: vi.fn(async (id: string) =>
+      postings.find((posting) => posting.id === id) ?? null,
+    ),
     create: vi.fn(async (draft: JobPostingDraft) => ({
       ...createPosting(
         "saved",
