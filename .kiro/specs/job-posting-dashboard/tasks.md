@@ -34,7 +34,7 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
     - _Requirements: 1.1_
 
 - [ ] 2. 도메인 타입 및 순수 유틸리티 — 표시/정렬 로직
-  - [ ] 2.1 도메인 타입 및 애플리케이션 타입 정의
+  - [x] 2.1 도메인 타입 및 애플리케이션 타입 정의
     - JobPosting, JobPostingDraft, EvaluationCriterion, JobCategory, CredentialProfile, CredentialProfileInput, CriterionFit, FitResult, ValidationResult, AddResult, SaveResult 등 TypeScript 타입 정의
     - 열거형(EnterpriseType, CriterionType, RequiredFlag, PostingSource)에 대응하는 TS 타입 정의
     - _Requirements: 1.2, 2.2, 6.1, 7.2_
