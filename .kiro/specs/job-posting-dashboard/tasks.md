@@ -64,12 +64,12 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
     - 최소 100회 반복
 
 - [ ] 3. 순수 유틸리티 — 검증 및 적합도 계산
-  - [ ] 3.1 validateProfile 순수 함수 구현
+  - [x] 3.1 validateProfile 순수 함수 구현
     - languageScore 정수 0~990, koreanHistoryGrade 정수 1~6, certifications 항목당 ≤100자·최대 50개
     - 위반 시 위반 필드 식별하는 ValidationResult 반환
     - _Requirements: 6.2_
 
-  - [ ]* 3.2 validateProfile property test
+  - [x]* 3.2 validateProfile property test
     - **Feature: job-posting-dashboard, Property 20: 자격 프로필 검증 — For any Credential_Profile 입력에 대해, 어학 0~990, 한국사 1~6, 자격증 항목당 ≤100자·최대 50개 제약을 모두 만족할 때만 저장이 수락되며, 위반 시 저장이 거부되고 위반 필드가 식별되며 기존 저장 값이 유지되어야 한다.**
     - **Validates: Requirements 6.2**
     - 최소 100회 반복
