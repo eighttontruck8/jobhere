@@ -222,13 +222,13 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
     - _Requirements: 1.5, 2.10, 4.6, 5.3, 5.5, 6.2, 7.5, 7.6_
 
 - [ ] 12. UI 페이지 구현 및 와이어링
-  - [ ] 12.1 Dashboard 페이지 (`/dashboard`) 구현
+  - [x] 12.1 Dashboard 페이지 (`/dashboard`) 구현
     - 공고 카드 목록(최신순, 라벨, 제목 truncate), 빈 상태(R1.3), 조회 실패 메시지(R1.5)
     - 사기업 인턴십 목록: 기업명 → 직무명 → 마감(~M/D(요일)) 행, 마감 오름차순, 누락 필드 대체 표시, 빈 상태(R3.4)
     - 공기업 통합 표: 20행 상한, 필수/선택 표시, 대체 표시, 직무 카테고리 필터, 수동 추가
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 2.10, 3.1, 3.2, 3.3, 3.4, 3.5_
 
-  - [ ]* 12.2 Dashboard 표시 컴포넌트 property/단위 테스트
+  - [x]* 12.2 Dashboard 표시 컴포넌트 property/단위 테스트
     - **Feature: job-posting-dashboard, Property 2: 공기업/사기업 라벨 정확성 — For any Job_Posting에 대해, 카드에 표시되는 구분 라벨은 {공기업, 사기업} 중 정확히 하나이며 해당 공고의 `enterpriseType`과 일치해야 한다.**
     - **Validates: Requirements 1.2**
     - **Feature: job-posting-dashboard, Property 9: 사기업 행 필드 순서 — For any Private_Company_Posting에 대해, 표시되는 행은 기업명 → 직무명 → 마감 기한 순서의 필드로 구성되어야 한다.**

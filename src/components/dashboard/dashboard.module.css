@@ -1,0 +1,401 @@
+.dashboard {
+  display: grid;
+  gap: 52px;
+}
+
+.hero {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 32px;
+  padding: 44px;
+  overflow: hidden;
+  border-radius: 28px;
+  color: #fff;
+  background: linear-gradient(135deg, #172554 0%, #2646a5 58%, #3d67e8 100%);
+  box-shadow: 0 24px 60px rgb(30 64 175 / 18%);
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  right: -70px;
+  top: -120px;
+  border: 48px solid rgb(255 255 255 / 7%);
+  border-radius: 50%;
+}
+
+.eyebrow,
+.sectionKicker {
+  margin-bottom: 10px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.eyebrow {
+  color: #bfdbfe;
+}
+
+.hero h1 {
+  position: relative;
+  font-size: clamp(2.1rem, 5vw, 3.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.055em;
+}
+
+.heroDescription {
+  max-width: 570px;
+  margin-top: 18px;
+  color: #dbeafe;
+  line-height: 1.65;
+}
+
+.primaryAction {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  display: inline-flex;
+  gap: 24px;
+  align-items: center;
+  padding: 14px 18px;
+  border-radius: 12px;
+  color: #172554;
+  background: #fff;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.section {
+  min-width: 0;
+}
+
+.sectionHeading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.sectionKicker {
+  color: var(--primary);
+}
+
+.sectionHeading h2 {
+  font-size: clamp(1.45rem, 3vw, 2rem);
+  letter-spacing: -0.035em;
+}
+
+.count,
+.headingNote {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.postingCard {
+  display: flex;
+  min-height: 220px;
+  flex-direction: column;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.postingCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 32px rgb(30 41 59 / 9%);
+}
+
+.cardMeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.badge,
+.flag {
+  display: inline-flex;
+  width: fit-content;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.publicBadge {
+  color: #1d4ed8;
+  background: #dbeafe;
+}
+
+.privateBadge {
+  color: #047857;
+  background: #d1fae5;
+}
+
+.postingCard h3 {
+  margin-top: 22px;
+  font-size: 1.1rem;
+  line-height: 1.45;
+  letter-spacing: -0.02em;
+}
+
+.company {
+  margin-top: 9px;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid #edf1f7;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.cardFooter strong {
+  color: #d94d4d;
+}
+
+.sectionState {
+  display: grid;
+  min-height: 128px;
+  place-items: center;
+  padding: 24px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 16px;
+  color: var(--muted);
+  background: rgb(255 255 255 / 55%);
+  text-align: center;
+}
+
+.privateList {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: #fff;
+}
+
+.privateRow {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 120px;
+  gap: 20px;
+  align-items: center;
+  padding: 18px 22px;
+  border-bottom: 1px solid #edf1f7;
+}
+
+.privateRow:last-child {
+  border-bottom: 0;
+}
+
+.privateRow span {
+  color: var(--muted);
+}
+
+.privateRow time {
+  color: #d94d4d;
+  font-weight: 800;
+  text-align: right;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.toolbar label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.toolbar select,
+.toolbar button {
+  min-height: 42px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  font: inherit;
+}
+
+.toolbar select {
+  min-width: 180px;
+  padding: 0 36px 0 12px;
+  color: var(--foreground);
+}
+
+.manualAdd {
+  display: flex;
+  gap: 8px;
+}
+
+.toolbar button {
+  padding: 0 16px;
+  border-color: #2547b8;
+  color: #fff;
+  background: #2547b8;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.notice {
+  margin: 0 0 14px;
+  color: #3157d5;
+  font-size: 0.85rem;
+}
+
+.tableScroll {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: #fff;
+}
+
+.evaluationTable {
+  width: 100%;
+  min-width: 780px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.evaluationTable th,
+.evaluationTable td {
+  padding: 18px;
+  border-bottom: 1px solid #edf1f7;
+  vertical-align: top;
+}
+
+.evaluationTable thead th {
+  color: var(--muted);
+  background: #f8fafc;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+}
+
+.evaluationTable tbody tr:last-child th,
+.evaluationTable tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.evaluationTable tbody th {
+  min-width: 180px;
+}
+
+.evaluationTable tbody th strong,
+.evaluationTable tbody th span,
+.evaluationTable td span {
+  display: block;
+}
+
+.evaluationTable tbody th span {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.evaluationTable td {
+  color: #475569;
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.flag {
+  margin-bottom: 7px;
+  color: #475569;
+  background: #eef2f7;
+}
+
+.flag[data-required="true"] {
+  color: #b42318;
+  background: #fee4e2;
+}
+
+@media (max-width: 860px) {
+  .hero {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 34px;
+  }
+
+  .cardGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .manualAdd,
+  .toolbar label,
+  .toolbar select {
+    width: 100%;
+  }
+
+  .manualAdd select {
+    flex: 1;
+  }
+}
+
+@media (max-width: 580px) {
+  .dashboard {
+    gap: 40px;
+  }
+
+  .hero {
+    padding: 28px 24px;
+    border-radius: 22px;
+  }
+
+  .primaryAction {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .cardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .privateRow {
+    grid-template-columns: 1fr auto;
+    gap: 7px 14px;
+  }
+
+  .privateRow span {
+    grid-column: 1;
+  }
+
+  .privateRow time {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .manualAdd {
+    flex-direction: column;
+  }
+}
