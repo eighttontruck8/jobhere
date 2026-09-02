@@ -28,7 +28,7 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
     - 초기 마이그레이션 생성 및 Prisma Client 생성
     - _Requirements: 1.2, 2.1, 3.5, 6.1_
 
-  - [ ] 1.3 테스트 프레임워크 설정 (Vitest + property test 라이브러리)
+  - [x] 1.3 테스트 프레임워크 설정 (Vitest + property test 라이브러리)
     - Vitest 및 fast-check 설치·구성, 테스트 스크립트 추가(단일 실행: `vitest --run`)
     - property test 기본 반복 횟수 100회로 설정하는 공용 헬퍼/구성 작성
     - _Requirements: 1.1_

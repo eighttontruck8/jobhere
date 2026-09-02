@@ -21,5 +21,6 @@ npm run dev
 
 ```bash
 npm run lint
+npm run test
 npm run build
 ```

@@ -4,7 +4,7 @@
 
 - [x] 1. Next.js + TypeScript 프로젝트 생성 및 핵심 화면 경로 구성
   - 완료 조건: `/dashboard`, `/profile`, `/postings/add`, `/postings/review` 빌드 성공
-- [ ] 2. Vitest + fast-check 테스트 실행 환경 구성
+- [x] 2. Vitest + fast-check 테스트 실행 환경 구성
   - 완료 조건: 예제 단위 테스트와 property test 통과
 - [ ] 3. Prisma + PostgreSQL 연결 설정 및 데이터 모델 정의
   - 완료 조건: Prisma 스키마 검증과 Client 생성 성공
