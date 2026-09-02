@@ -16,7 +16,7 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
 ## Tasks
 
 - [ ] 1. 프로젝트 스캐폴딩 및 기반 설정
-  - [ ] 1.1 Next.js(App Router) + TypeScript 프로젝트 초기화
+  - [x] 1.1 Next.js(App Router) + TypeScript 프로젝트 초기화
     - `create-next-app`으로 App Router + TypeScript 프로젝트 생성, ESLint/tsconfig 구성
     - `app/` 기본 라우트 구조 생성(`app/dashboard`, `app/profile`, `app/postings/add`, `app/postings/review` 디렉터리 placeholder)
     - _Requirements: 1.1_

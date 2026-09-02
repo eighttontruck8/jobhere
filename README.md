@@ -1,0 +1,25 @@
+# 채용 공고 대시보드
+
+공기업·사기업 채용 공고를 비교하고, 저장한 자격 프로필을 기준으로 공고 적합도를 확인하는 단일 사용자용 MVP입니다.
+
+## 로컬 실행
+
+```bash
+npm run dev
+```
+
+브라우저에서 [http://localhost:3000](http://localhost:3000)을 엽니다. 루트 경로는 `/dashboard`로 이동합니다.
+
+## MVP 화면 경로
+
+- `/dashboard`: 채용 공고 대시보드
+- `/profile`: 단일 자격 프로필
+- `/postings/add`: 링크·이미지 공고 분석
+- `/postings/review`: 분석 결과 검토·저장
+
+## 검증
+
+```bash
+npm run lint
+npm run build
+```
