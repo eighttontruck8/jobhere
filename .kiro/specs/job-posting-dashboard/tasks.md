@@ -33,30 +33,30 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
     - property test 기본 반복 횟수 100회로 설정하는 공용 헬퍼/구성 작성
     - _Requirements: 1.1_
 
-- [ ] 2. 도메인 타입 및 순수 유틸리티 — 표시/정렬 로직
+- [x] 2. 도메인 타입 및 순수 유틸리티 — 표시/정렬 로직
   - [x] 2.1 도메인 타입 및 애플리케이션 타입 정의
     - JobPosting, JobPostingDraft, EvaluationCriterion, JobCategory, CredentialProfile, CredentialProfileInput, CriterionFit, FitResult, ValidationResult, AddResult, SaveResult 등 TypeScript 타입 정의
     - 열거형(EnterpriseType, CriterionType, RequiredFlag, PostingSource)에 대응하는 TS 타입 정의
     - _Requirements: 1.2, 2.2, 6.1, 7.2_
 
-  - [ ] 2.2 formatDeadline 및 truncateTitle 순수 함수 구현
+  - [x] 2.2 formatDeadline 및 truncateTitle 순수 함수 구현
     - `formatDeadline(date)`: `~M/D(요일)` 형식, 월/일 앞자리 0 없음, 한글 단문자 요일
     - `truncateTitle(title, max=100)`: 100자 이하 그대로, 초과 시 100자 + 말줄임(`…`)
     - _Requirements: 1.4, 3.2_
 
-  - [ ]* 2.3 formatDeadline / truncateTitle property test
+  - [x]* 2.3 formatDeadline / truncateTitle property test
     - **Feature: job-posting-dashboard, Property 10: 마감 기한 포맷 — For any 날짜에 대해, `formatDeadline`의 출력은 `~M/D(요일)` 형식을 만족하며, 월·일·요일은 해당 날짜와 정확히 대응해야 한다.**
     - **Validates: Requirements 3.2**
     - **Feature: job-posting-dashboard, Property 3: 제목 말줄임 불변식 — For any 제목 문자열에 대해, 표시되는 제목 본문 길이는 100자를 초과하지 않으며, 원본이 100자를 초과하는 경우에만 말줄임 표시가 붙어야 한다.**
     - **Validates: Requirements 1.4**
     - 최소 100회 반복
 
-  - [ ] 2.4 sortByNewest / sortByDeadlineAsc 정렬 함수 구현
+  - [x] 2.4 sortByNewest / sortByDeadlineAsc 정렬 함수 구현
     - `sortByNewest`: createdAt 내림차순
     - `sortByDeadlineAsc`: deadline 오름차순, deadline null 항목은 말미 배치
     - _Requirements: 1.1, 3.3_
 
-  - [ ]* 2.5 정렬 함수 property test
+  - [x]* 2.5 정렬 함수 property test
     - **Feature: job-posting-dashboard, Property 1: 대시보드 최신순 정렬 — For any 저장된 Job_Posting 목록에 대해, 대시보드 표시 순서는 `createdAt` 기준 내림차순(최신 먼저)이어야 한다.**
     - **Validates: Requirements 1.1**
     - **Feature: job-posting-dashboard, Property 11: 사기업 마감 오름차순 정렬 — For any Private_Company_Posting 집합에 대해, 표시 순서는 마감 기한 오름차순이어야 한다(마감 값이 있는 항목 간).**
