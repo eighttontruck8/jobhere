@@ -239,7 +239,7 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
     - 렌더링 에지 케이스: 선택 criterion 자격증 없음(R2.4), 필수 criterion cutoff 없음(R2.6) 대체 표시
     - _Requirements: 2.4, 2.6_
 
-  - [ ] 12.3 Profile 페이지 (`/profile`) 구현
+  - [x] 12.3 Profile 페이지 (`/profile`) 구현
     - Credential_Profile 입력/조회 폼, 검증 오류 필드 표시(R6.2), 저장 완료 표시, 미존재 안내(R6.5)
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5_
 
