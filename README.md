@@ -22,6 +22,8 @@ npm run db:migrate
 
 `db:migrate`는 연결된 PostgreSQL에 마이그레이션을 적용합니다.
 
+링크·이미지 공고 분석에는 `.env`의 `OPENAI_API_KEY`와 `OPENAI_MODEL`을 설정합니다. OpenAI 호환 API를 사용한다면 `OPENAI_BASE_URL`도 변경할 수 있습니다.
+
 ## MVP 화면 경로
 
 - `/dashboard`: 채용 공고 대시보드

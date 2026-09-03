@@ -119,11 +119,11 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
     - 최소 100회 반복
 
 - [ ] 6. Analysis_Engine 순수 후처리 로직 (RoleFilter + 개수 캡)
-  - [ ] 6.1 RoleFilter.apply 및 개수 캡(50) 순수 함수 구현
+  - [x] 6.1 RoleFilter.apply 및 개수 캡(50) 순수 함수 구현
     - filter 있으면 일치 role만, 없으면 전체, 이후 최대 50개 캡
     - _Requirements: 4.3, 4.4, 4.5_
 
-  - [ ]* 6.2 RoleFilter / 개수 캡 property test
+  - [x]* 6.2 RoleFilter / 개수 캡 property test
     - **Feature: job-posting-dashboard, Property 13: 복수 직무 추출 상한 — For any 복수 직무를 포함한 추출 결과에 대해, Analysis_Engine이 산출하는 Job_Posting 항목 수는 `min(발견된 직무 수, 50)`이어야 한다.**
     - **Validates: Requirements 4.3**
     - **Feature: job-posting-dashboard, Property 14: Role_Filter 적용 정확성 — For any 추출된 직무 집합에 대해, Role_Filter가 설정되면 결과의 모든 직무는 필터와 일치하고 일치하는 직무는 누락되지 않으며, Role_Filter가 없으면 결과는 (50개 상한 내에서) 발견된 모든 직무와 같아야 한다.**
@@ -177,7 +177,7 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
     - 프로필 미존재 안내(R7.5), cutoff 미정의 안내(R7.6) 케이스
     - _Requirements: 7.5, 7.6_
 
-- [ ] 9. Analysis_Engine 오케스트레이션 구현
+- [x] 9. Analysis_Engine 오케스트레이션 구현
   - [x] 9.1 SourceParser 인터페이스 및 LinkParser / ImageParser 구현
     - LinkParser: URL fetch → 본문 텍스트, 접근 불가 시 SourceAccessError(R4.7)
     - ImageParser: 형식·크기 검증(6.3 재사용) 후 비전 LLM/OCR 페이로드 준비
@@ -188,19 +188,19 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
     - stub이 미구현 오류를 반환하는지에 대한 단순 단위 테스트
     - _Requirements: (비목표 확장 seam)_
 
-  - [ ] 9.3 LlmExtractionService 및 AnalysisEngine 오케스트레이션 구현
+  - [x] 9.3 LlmExtractionService 및 AnalysisEngine 오케스트레이션 구현
     - parser 선택 → extractRawContent → LLM 추출 → RoleFilter.apply → 50 캡
     - 실패 시 원본 소스 보존한 AnalysisResult 반환(R4.6)
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6_
 
-  - [ ]* 9.4 원본 소스 보존 property test 및 엔진 통합 테스트
+  - [x]* 9.4 원본 소스 보존 property test 및 엔진 통합 테스트
     - **Feature: job-posting-dashboard, Property 15: 추출 실패 시 원본 소스 보존 — For any 추출이 실패하는 입력에 대해, System은 실패를 알리는 결과를 반환하고 사용자가 입력한 원본 소스를 변경 없이 보존해야 한다.**
     - **Validates: Requirements 4.6**
     - 링크 fetch / LLM·비전 API를 mock으로 대체하여 parser 디스패치(link→LinkParser, image→ImageParser) 및 흐름 검증(R4.1, R4.2, R4.7)
     - 최소 100회 반복(property test), 대표 예시 1~3개(통합 테스트)
     - _Requirements: 4.1, 4.2, 4.7_
 
-- [ ] 10. 체크포인트 — 서비스/엔진 검증
+- [x] 10. 체크포인트 — 서비스/엔진 검증
   - 모든 테스트가 통과하는지 확인하고, 의문이 생기면 사용자에게 질문한다.
 
 - [ ] 11. Route Handlers 구현
