@@ -6,3 +6,4 @@ export * from "./job-posting";
 export * from "./job-posting-utils";
 export * from "./profile";
 export * from "./profile-validation";
+export * from "./posting-draft-validation";

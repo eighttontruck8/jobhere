@@ -118,7 +118,7 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
     - **Validates: Requirements 2.10**
     - 최소 100회 반복
 
-- [ ] 6. Analysis_Engine 순수 후처리 로직 (RoleFilter + 개수 캡)
+- [x] 6. Analysis_Engine 순수 후처리 로직 (RoleFilter + 개수 캡)
   - [x] 6.1 RoleFilter.apply 및 개수 캡(50) 순수 함수 구현
     - filter 있으면 일치 role만, 없으면 전체, 이후 최대 50개 캡
     - _Requirements: 4.3, 4.4, 4.5_
@@ -130,19 +130,19 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
     - **Validates: Requirements 4.4, 4.5**
     - 최소 100회 반복
 
-  - [ ] 6.3 이미지 입력 검증 및 필수 필드 검증 순수 함수 구현
+  - [x] 6.3 이미지 입력 검증 및 필수 필드 검증 순수 함수 구현
     - 이미지: mimeType ∈ {image/jpeg, image/png} 그리고 sizeBytes ≤ 10MB일 때만 통과, 그 외 UnsupportedImageError
     - draft 필수 필드(기업명·직무명·마감) 검증 함수: 비어 있으면 거부 + 누락 필드 식별
     - _Requirements: 4.8, 5.3_
 
-  - [ ]* 6.4 이미지 검증 / 필수 필드 검증 property test
+  - [x]* 6.4 이미지 검증 / 필수 필드 검증 property test
     - **Feature: job-posting-dashboard, Property 16: 이미지 입력 검증 — For any 제출 이미지에 대해, 형식이 {JPEG, PNG}이고 크기가 10MB 이하일 때만 분석이 수행되며, 그 외에는 조건 미충족 오류로 거부되고 분석이 수행되지 않아야 한다.**
     - **Validates: Requirements 4.8**
     - **Feature: job-posting-dashboard, Property 18: 필수 필드 저장 거부 — For any 검토 draft에 대해, 기업명·직무명·마감 기한 중 하나라도 비어 있으면 저장은 거부되고 누락 필드를 알리는 오류가 제공되어야 한다.**
     - **Validates: Requirements 5.3**
     - 최소 100회 반복
 
-- [ ] 7. 체크포인트 — 표/엔진 순수 로직 검증
+- [x] 7. 체크포인트 — 표/엔진 순수 로직 검증
   - 모든 테스트가 통과하는지 확인하고, 의문이 생기면 사용자에게 질문한다.
 
 - [x] 8. 서비스 계층 구현 (Prisma 연동)
@@ -203,13 +203,13 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
 - [x] 10. 체크포인트 — 서비스/엔진 검증
   - 모든 테스트가 통과하는지 확인하고, 의문이 생기면 사용자에게 질문한다.
 
-- [ ] 11. Route Handlers 구현
+- [x] 11. Route Handlers 구현
   - [x] 11.1 공고 조회/저장 Route Handlers
     - GET `/api/postings`(목록), POST `/api/postings`(검토 완료 저장), GET `/api/postings/table`(통합 표)
     - 입력 검증·서비스 호출·응답 직렬화, 오류 결과 타입 → HTTP 응답 매핑(R1.5, R2.10, R5.3, R5.5)
     - _Requirements: 1.1, 1.5, 2.1, 2.7, 2.9, 2.10, 5.3, 5.4, 5.5_
 
-  - [ ] 11.2 분석 Route Handler
+  - [x] 11.2 분석 Route Handler
     - POST `/api/analyze`: 입력 검증 후 AnalysisEngine 호출, 실패 시 원본 소스 보존 응답(R4.6, R4.7, R4.8)
     - _Requirements: 4.1, 4.2, 4.6, 4.7, 4.8_
 
@@ -217,7 +217,7 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
     - GET/PUT `/api/profile`(조회/저장), GET `/api/postings/:id/fit`(적합도 계산)
     - _Requirements: 6.1, 6.2, 6.4, 6.5, 7.1, 7.5, 7.6_
 
-  - [ ]* 11.4 Route Handler 통합 테스트
+  - [x]* 11.4 Route Handler 통합 테스트
     - 서비스 mock으로 각 엔드포인트의 성공/오류 응답 매핑 검증
     - _Requirements: 1.5, 2.10, 4.6, 5.3, 5.5, 6.2, 7.5, 7.6_
 
@@ -243,12 +243,12 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
     - Credential_Profile 입력/조회 폼, 검증 오류 필드 표시(R6.2), 저장 완료 표시, 미존재 안내(R6.5)
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5_
 
-  - [ ] 12.4 공고 추가 및 Review 페이지 (`/postings/add`, `/postings/review`) 구현
+  - [x] 12.4 공고 추가 및 Review 페이지 (`/postings/add`, `/postings/review`) 구현
     - add: 링크/이미지 제출 → `/api/analyze` 트리거, 오류 시 원본 소스 보존 표시(R4.6, R4.7, R4.8)
     - review: 추출 draft 편집 표시(R5.1), 편집 반영(R5.2), 필수 필드 검증 저장(R5.3), 저장/취소(R5.4, R5.5, R5.6)
     - _Requirements: 4.1, 4.2, 4.6, 4.7, 4.8, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6_
 
-  - [ ]* 12.5 Review 편집 반영 property test
+  - [x]* 12.5 Review 편집 반영 property test
     - **Feature: job-posting-dashboard, Property 17: 검토 편집 반영 — For any Review_Screen에서의 필드 편집에 대해, 저장 대상 draft 데이터는 편집된 값을 정확히 반영해야 한다.**
     - **Validates: Requirements 5.2**
     - 최소 100회 반복

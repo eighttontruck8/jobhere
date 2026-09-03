@@ -2,6 +2,7 @@ import {
   EnterpriseType,
   sortByDeadlineAsc,
   sortByNewest,
+  validatePostingDraftRequiredFields,
   type JobPosting,
   type JobPostingDraft,
 } from "@/domain";
@@ -40,22 +41,10 @@ export class PostingService implements PostingServiceContract {
   }
 
   async savePosting(draft: JobPostingDraft): Promise<JobPosting> {
-    const missingFields: RequiredPostingField[] = [];
+    const validation = validatePostingDraftRequiredFields(draft);
 
-    if (!draft.company?.trim()) {
-      missingFields.push("company");
-    }
-
-    if (!draft.jobRole?.trim()) {
-      missingFields.push("jobRole");
-    }
-
-    if (draft.deadline === null || Number.isNaN(draft.deadline.getTime())) {
-      missingFields.push("deadline");
-    }
-
-    if (missingFields.length > 0) {
-      throw new PostingDraftValidationError(missingFields);
+    if (!validation.valid) {
+      throw new PostingDraftValidationError(validation.fields);
     }
 
     return this.repository.create(draft);
