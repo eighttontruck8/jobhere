@@ -74,9 +74,26 @@ describe("PostingReview", () => {
     fireEvent.change(company, { target: { value: "보존 회사" } });
     fireEvent.click(screen.getByRole("button", { name: "이 공고 저장" }));
 
-    expect(await screen.findByText("저장 서버 오류")).not.toBeNull();
+    const alert = await screen.findByRole("alert");
+    expect(alert.textContent).toContain("저장에 실패했습니다");
+    expect(alert.textContent).toContain("저장 서버 오류");
     expect((company as HTMLInputElement).value).toBe("보존 회사");
     expect(readReviewDrafts(sessionStorage)[0].company).toBe("보존 회사");
+  });
+
+  it("네트워크 또는 비정상 응답 실패도 고정 알림으로 안내한다", async () => {
+    writeReviewDrafts(sessionStorage, [draft()]);
+    const fetcher = vi.fn(async () => {
+      throw new TypeError("Failed to fetch");
+    });
+    render(<PostingReview fetcher={fetcher} />);
+    await screen.findByText("개발자 채용");
+    fireEvent.click(screen.getByRole("button", { name: "이 공고 저장" }));
+
+    const alert = await screen.findByRole("alert");
+    expect(alert.textContent).toContain("저장에 실패했습니다");
+    expect(alert.textContent).toContain("서버와 통신하지 못했습니다");
+    expect(readReviewDrafts(sessionStorage)).toHaveLength(1);
   });
 
   it("분석 취소 시 임시 공고를 지우고 입력 화면으로 돌아간다", async () => {

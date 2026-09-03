@@ -22,6 +22,11 @@ import styles from "./posting-flow.module.css";
 type Fetcher = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 interface PostingReviewProps { fetcher?: Fetcher }
 interface SaveResponse { error?: string; fields?: string[] }
+interface Notice {
+  kind: "success" | "error";
+  title: string;
+  message: string;
+}
 
 const criterionLabels = {
   [CriterionType.LANGUAGE]: "어학",
@@ -45,7 +50,7 @@ export function PostingReview({ fetcher }: PostingReviewProps) {
   const [drafts, setDrafts] = useState<SerializedPostingDraft[] | null>(null);
   const [errors, setErrors] = useState<Record<number, string[]>>({});
   const [savingIndex, setSavingIndex] = useState<number | null>(null);
-  const [message, setMessage] = useState("");
+  const [notice, setNotice] = useState<Notice | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -64,7 +69,7 @@ export function PostingReview({ fetcher }: PostingReviewProps) {
     if (!drafts) return;
     commitDrafts(updateReviewDraft(drafts, index, update));
     setErrors((current) => ({ ...current, [index]: [] }));
-    setMessage("");
+    setNotice(null);
   }
 
   function updateCriterion(draftIndex: number, criterionIndex: number, update: Partial<EvaluationCriterionDraft>) {
@@ -81,19 +86,23 @@ export function PostingReview({ fetcher }: PostingReviewProps) {
     const validation = validatePostingDraftRequiredFields(toJobPostingDraft(draft));
     if (!validation.valid) {
       setErrors((current) => ({ ...current, [index]: validation.fields }));
-      setMessage("필수 항목을 확인해 주세요.");
+      setNotice({
+        kind: "error",
+        title: "저장할 수 없습니다",
+        message: "회사명, 직무, 마감일 등 필수 항목을 확인해 주세요.",
+      });
       return;
     }
 
     setSavingIndex(index);
-    setMessage("");
+    setNotice(null);
     try {
       const response = await request("/api/postings", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(draft),
       });
-      const body = (await response.json()) as SaveResponse;
+      const body = await readSaveResponse(response);
       if (!response.ok) {
         setErrors((current) => ({ ...current, [index]: body.fields ?? [] }));
         throw new Error(body.error || "공고를 저장하지 못했습니다.");
@@ -103,9 +112,21 @@ export function PostingReview({ fetcher }: PostingReviewProps) {
       commitDrafts(remaining);
       setErrors({});
       if (remaining.length === 0) router.push("/dashboard");
-      else setMessage("공고를 저장했습니다. 남은 공고를 확인해 주세요.");
+      else setNotice({
+        kind: "success",
+        title: "저장 완료",
+        message: "공고를 저장했습니다. 남은 공고를 확인해 주세요.",
+      });
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "공고를 저장하지 못했습니다.");
+      setNotice({
+        kind: "error",
+        title: "저장에 실패했습니다",
+        message: error instanceof TypeError
+          ? "서버와 통신하지 못했습니다. 네트워크 상태를 확인하고 다시 시도해 주세요."
+          : error instanceof Error
+            ? error.message
+            : "잠시 후 다시 시도해 주세요.",
+      });
     } finally {
       setSavingIndex(null);
     }
@@ -139,7 +160,25 @@ export function PostingReview({ fetcher }: PostingReviewProps) {
         <button className={styles.secondaryButton} onClick={cancelReview} type="button">분석 취소</button>
       </header>
 
-      {message && <p className={message.includes("저장했습니다") ? styles.successBanner : styles.errorBanner} role="status">{message}</p>}
+      {notice && (
+        <div
+          aria-live={notice.kind === "error" ? "assertive" : "polite"}
+          className={`${styles.saveNotice} ${notice.kind === "error" ? styles.saveNoticeError : styles.saveNoticeSuccess}`}
+          role={notice.kind === "error" ? "alert" : "status"}
+        >
+          <div>
+            <strong>{notice.title}</strong>
+            <p>{notice.message}</p>
+          </div>
+          <button
+            aria-label="저장 알림 닫기"
+            onClick={() => setNotice(null)}
+            type="button"
+          >
+            ×
+          </button>
+        </div>
+      )}
       <div className={styles.reviewList}>
         {drafts.map((draft, draftIndex) => {
           const fieldErrors = errors[draftIndex] ?? [];
@@ -213,4 +252,12 @@ export function PostingReview({ fetcher }: PostingReviewProps) {
 
 function RequiredField({ label, error, message, children }: { label: string; error: boolean; message: string; children: React.ReactNode }) {
   return <label className={styles.stackField}><span>{label} *</span>{children}{error && <small className={styles.fieldError}>{message}</small>}</label>;
+}
+
+async function readSaveResponse(response: Response): Promise<SaveResponse> {
+  try {
+    return (await response.json()) as SaveResponse;
+  } catch {
+    return {};
+  }
 }
