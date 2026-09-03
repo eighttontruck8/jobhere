@@ -42,7 +42,10 @@ export class LlmExtractionService
     }
 
     try {
-      return parseExtractedPostings(response);
+      return parseExtractedPostings(response).map((posting) => ({
+        ...posting,
+        originalUrl: content.kind === "text" ? content.sourceUrl : null,
+      }));
     } catch (error) {
       throw new ExtractionError(
         "INVALID_RESPONSE",

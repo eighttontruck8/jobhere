@@ -89,6 +89,9 @@ describe("postings handlers", () => {
           title: "개발 인턴",
           deadline: "2026-09-30T14:59:59.000Z",
           jobCategory: "개발",
+          recruitmentCount: "2명",
+          details: "서비스 개발 및 운영",
+          originalUrl: "https://example.com/jobs/1",
         }),
       }),
     );
@@ -99,6 +102,9 @@ describe("postings handlers", () => {
         source: PostingSource.USER,
         deadline: new Date("2026-09-30T14:59:59.000Z"),
         criteria: [],
+        recruitmentCount: "2명",
+        details: "서비스 개발 및 운영",
+        originalUrl: "https://example.com/jobs/1",
       }),
     );
   });

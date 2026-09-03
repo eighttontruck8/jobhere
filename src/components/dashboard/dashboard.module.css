@@ -160,6 +160,13 @@
   font-size: 0.88rem;
 }
 
+.recruitmentCount {
+  margin-top: 7px;
+  color: #3157d5;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
 .cardFooter {
   display: flex;
   justify-content: space-between;

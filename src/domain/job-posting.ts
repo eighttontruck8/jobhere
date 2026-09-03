@@ -31,6 +31,9 @@ export interface JobPosting {
   title: string;
   deadline: Date | null;
   jobCategory: JobCategory | null;
+  recruitmentCount?: string | null;
+  details?: string | null;
+  originalUrl?: string | null;
   source: PostingSource;
   createdAt: Date;
   criteria: EvaluationCriterion[];
@@ -43,6 +46,9 @@ export interface JobPostingDraft {
   title: string;
   deadline: Date | null;
   jobCategory: JobCategory | null;
+  recruitmentCount?: string | null;
+  details?: string | null;
+  originalUrl?: string | null;
   source: PostingSource;
   criteria: EvaluationCriterionDraft[];
 }

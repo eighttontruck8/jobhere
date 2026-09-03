@@ -21,6 +21,8 @@ const structuredOutput = {
       title: "백엔드 개발자 채용",
       deadline: null,
       jobCategory: "IT",
+      recruitmentCount: "2명",
+      details: "백엔드 서비스 개발",
       criteria: [],
     },
   ],

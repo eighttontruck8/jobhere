@@ -92,6 +92,9 @@ export function parseSerializedDrafts(value: unknown): SerializedPostingDraft[] 
         title: draft.title,
         deadline: parseNullableString(draft.deadline),
         jobCategory: parseNullableString(draft.jobCategory),
+        recruitmentCount: parseNullableString(draft.recruitmentCount),
+        details: parseNullableString(draft.details),
+        originalUrl: parseNullableString(draft.originalUrl),
         source: isEnumValue(Object.values(PostingSource), draft.source)
           ? draft.source
           : PostingSource.USER,

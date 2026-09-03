@@ -29,6 +29,9 @@ function draft(update: Partial<SerializedPostingDraft> = {}): SerializedPostingD
     deadline: "2026-09-30T00:00:00.000Z",
     jobCategory: "IT",
     source: PostingSource.USER,
+    recruitmentCount: "2명",
+    details: "서비스 개발 및 운영",
+    originalUrl: "https://example.com/jobs/1",
     criteria: [],
     ...update,
   };
@@ -56,6 +59,11 @@ describe("PostingReview", () => {
     await waitFor(() => expect(push).toHaveBeenCalledWith("/dashboard"));
     const [, init] = fetcher.mock.calls[0];
     expect(JSON.parse(String(init?.body)).company).toBe("수정 회사");
+    expect(JSON.parse(String(init?.body))).toMatchObject({
+      recruitmentCount: "2명",
+      details: "서비스 개발 및 운영",
+      originalUrl: "https://example.com/jobs/1",
+    });
     expect(readReviewDrafts(sessionStorage)).toEqual([]);
   });
 

@@ -44,6 +44,8 @@
 3. IF 저장된 Job_Posting이 0개이면, THEN THE Dashboard SHALL 공고가 없음을 나타내는 빈 상태 메시지를 표시하고 카드 영역을 표시하지 않는다.
 4. THE Dashboard SHALL 각 Job_Posting 카드에 최대 100자까지의 공고 제목을 표시하고, 100자를 초과하는 제목은 100자까지만 표시하고 말줄임 표시로 축약한다.
 5. IF 저장된 Job_Posting 목록을 조회하는 데 실패하면, THEN THE Dashboard SHALL 조회 실패를 나타내는 오류 메시지를 표시하고 기존에 표시된 카드 목록을 변경하지 않는다.
+6. WHEN 사용자가 Job_Posting 카드를 선택하면, THE System SHALL 해당 공고의 기본 정보·모집인원·상세 내용·지원 자격을 정리한 상세 페이지로 이동한다.
+7. WHERE Job_Posting에 원본 URL이 저장되어 있으면, THE 상세 페이지 SHALL 새 창에서 원본 공고를 열 수 있는 하이퍼링크를 표시한다.
 
 ### Requirement 2: 공기업 평가 기준 통합 표
 
@@ -88,6 +90,7 @@
 6. IF Analysis_Engine이 소스에서 공고 정보를 추출하지 못하면, THEN THE System SHALL 추출 실패를 알리는 오류 메시지를 사용자에게 표시하고 사용자가 입력한 원본 소스를 보존한다.
 7. IF 입력된 링크에 접근할 수 없거나 유효하지 않으면, THEN THE System SHALL 소스 접근 실패를 알리는 오류 메시지를 사용자에게 표시한다.
 8. IF 제출된 이미지가 지원 형식(JPEG, PNG)이 아니거나 크기가 10MB를 초과하면, THEN THE System SHALL 이미지가 처리 조건을 충족하지 않음을 알리는 오류 메시지를 사용자에게 표시하고 분석을 수행하지 않는다.
+9. WHEN 링크 분석이 성공하면, THE Analysis_Engine SHALL 모집인원과 핵심 상세 내용을 추출하고 실제 접근한 최종 원본 URL을 Job_Posting draft에 보존한다.
 
 ### Requirement 5: 검토·편집 후 저장
 
@@ -101,6 +104,7 @@
 4. WHEN 사용자가 Review_Screen에서 저장을 확정하면, THE System SHALL 검토된 Job_Posting을 데이터베이스에 저장하고 저장 성공을 사용자에게 알린다.
 5. IF 데이터베이스 저장에 실패하면, THEN THE System SHALL 저장 실패를 알리는 오류 메시지를 표시하고 검토 중이던 데이터를 유지한다.
 6. WHEN 사용자가 Review_Screen에서 저장을 취소하면, THE System SHALL 추출된 데이터를 저장하지 않고 폐기한다.
+7. THE Review_Screen SHALL 모집인원·상세 내용·원본 URL을 편집 가능한 필드로 표시하고 저장 대상 데이터에 포함한다.
 
 ### Requirement 6: 자격 프로필 관리
 

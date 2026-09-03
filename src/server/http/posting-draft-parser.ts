@@ -34,6 +34,19 @@ function parseNullableString(value: unknown, field: string): string | null {
   throw new RequestBodyValidationError([field]);
 }
 
+function parseOriginalUrl(value: unknown): string | null {
+  const originalUrl = parseNullableString(value, "originalUrl");
+  if (originalUrl === null || originalUrl === "") return null;
+
+  try {
+    const url = new URL(originalUrl);
+    if (url.protocol !== "http:" && url.protocol !== "https:") throw new Error();
+    return url.toString();
+  } catch {
+    throw new RequestBodyValidationError(["originalUrl"]);
+  }
+}
+
 function parseCriteria(value: unknown): EvaluationCriterionDraft[] {
   if (value === undefined) {
     return [];
@@ -116,6 +129,12 @@ export function parseJobPostingDraft(value: unknown): JobPostingDraft {
     title: value.title,
     deadline,
     jobCategory: parseNullableString(value.jobCategory ?? null, "jobCategory"),
+    recruitmentCount: parseNullableString(
+      value.recruitmentCount ?? null,
+      "recruitmentCount",
+    ),
+    details: parseNullableString(value.details ?? null, "details"),
+    originalUrl: parseOriginalUrl(value.originalUrl ?? null),
     source,
     criteria: parseCriteria(value.criteria),
   };

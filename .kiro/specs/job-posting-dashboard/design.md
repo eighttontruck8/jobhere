@@ -35,7 +35,8 @@
 │   ├─ /dashboard              공고 카드 + 사기업 목록 + 통합 표     │
 │   ├─ /profile               Credential_Profile 입력/조회         │
 │   ├─ /postings/add          링크/이미지 제출 → 분석 트리거         │
-│   └─ /postings/review       Review_Screen (편집 후 저장)         │
+│   ├─ /postings/review       Review_Screen (편집 후 저장)         │
+│   └─ /postings/[id]         공고 상세 및 원본 링크                │
 │                                                                 │
 │  Route Handlers (app/api/**)                                    │
 │   ├─ GET  /api/postings            목록 조회                    │
@@ -253,6 +254,9 @@ model JobPosting {
   title          String          // 공고 제목 (표시 100자 캡 R1.4)
   deadline       DateTime?       // 마감 기한 (누락 가능 R3.5)
   jobCategory    String?         // 직무 카테고리 (필터용 R2.7)
+  recruitmentCount String?       // 모집인원 원문 표현
+  details        String?         // 핵심 내용 요약
+  originalUrl    String?         // 실제 접근한 원본 HTTP(S) URL
   source         PostingSource   @default(CRAWLED)
   createdAt      DateTime        @default(now()) // 최신순 정렬 기준 R1.1
   criteria       EvaluationCriterion[]

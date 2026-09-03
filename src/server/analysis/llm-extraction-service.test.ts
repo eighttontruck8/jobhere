@@ -24,6 +24,8 @@ describe("LlmExtractionService", () => {
             title: "신입 채용",
             deadline: "2026-09-30T00:00:00.000Z",
             jobCategory: "IT",
+            recruitmentCount: "3명",
+            details: "전산 시스템 개발 및 운영",
             criteria: [
               {
                 type: CriterionType.LANGUAGE,
@@ -47,6 +49,9 @@ describe("LlmExtractionService", () => {
       jobRole: "전산",
       source: PostingSource.USER,
       deadline: new Date("2026-09-30T00:00:00.000Z"),
+      recruitmentCount: "3명",
+      details: "전산 시스템 개발 및 운영",
+      originalUrl: "https://example.com/job",
     });
   });
 

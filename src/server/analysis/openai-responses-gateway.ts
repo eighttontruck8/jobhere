@@ -6,6 +6,8 @@ export const JOB_POSTING_EXTRACTION_INSTRUCTIONS = `
 enterpriseType은 PUBLIC 또는 PRIVATE, criterion type은 LANGUAGE, KOREAN_HISTORY, COMPUTER_SKILL, OTHER_CERT,
 requiredFlag는 REQUIRED 또는 OPTIONAL만 사용하세요. 알 수 없는 nullable 필드는 null,
 평가 기준을 찾지 못하면 criteria는 빈 배열로 반환하세요. 원문에 여러 직무가 있으면 각각 분리하세요.
+recruitmentCount에는 모집 인원을 원문 표현대로 간결하게 넣고(예: "3명", "00명"), 없으면 null로 반환하세요.
+details에는 담당 업무, 지원 자격, 우대 사항, 전형 절차 등 공고의 핵심 내용을 한국어로 읽기 쉽게 요약하고, 없으면 null로 반환하세요.
 LANGUAGE의 languageRequirements에는 공고가 인정하는 TOEIC, OPIc, TOEIC Speaking 기준을 각각 넣으세요.
 testType은 TOEIC, OPIC, TOEIC_SPEAKING 중 하나입니다. TOEIC은 score(0~990)를 사용하고 level은 null로,
 OPIc은 IL, IM1, IM2, IM3, IH, AL 중 level을 사용하고 score는 null로,
@@ -32,6 +34,8 @@ export const JOB_POSTINGS_JSON_SCHEMA = {
           "title",
           "deadline",
           "jobCategory",
+          "recruitmentCount",
+          "details",
           "criteria",
         ],
         properties: {
@@ -41,6 +45,8 @@ export const JOB_POSTINGS_JSON_SCHEMA = {
           title: { type: "string" },
           deadline: { type: ["string", "null"] },
           jobCategory: { type: ["string", "null"] },
+          recruitmentCount: { type: ["string", "null"] },
+          details: { type: ["string", "null"] },
           criteria: {
             type: "array",
             items: {

@@ -40,6 +40,10 @@ export class PostingService implements PostingServiceContract {
     );
   }
 
+  getPosting(id: string): Promise<JobPosting | null> {
+    return this.repository.findById(id);
+  }
+
   async savePosting(draft: JobPostingDraft): Promise<JobPosting> {
     const validation = validatePostingDraftRequiredFields(draft);
 

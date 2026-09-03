@@ -232,7 +232,7 @@ export function Dashboard({ fetcher }: DashboardProps) {
         {postingsStatus === "ready" && postings.length > 0 && (
           <div className={styles.cardGrid}>
             {postings.map((posting) => (
-              <article className={styles.postingCard} key={posting.id}>
+              <Link className={styles.postingCard} href={`/postings/${posting.id}`} key={posting.id}>
                 <div className={styles.cardMeta}>
                   <span
                     className={`${styles.badge} ${
@@ -249,6 +249,9 @@ export function Dashboard({ fetcher }: DashboardProps) {
                 <p className={styles.company}>
                   {posting.company?.trim() || MISSING_POSTING_VALUE}
                 </p>
+                {posting.recruitmentCount && (
+                  <p className={styles.recruitmentCount}>모집 {posting.recruitmentCount}</p>
+                )}
                 <div className={styles.cardFooter}>
                   <span>
                     {posting.jobRole?.trim() || MISSING_POSTING_VALUE}
@@ -259,7 +262,7 @@ export function Dashboard({ fetcher }: DashboardProps) {
                       : MISSING_POSTING_VALUE}
                   </strong>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         )}

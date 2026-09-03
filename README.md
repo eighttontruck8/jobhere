@@ -30,6 +30,7 @@ npm run db:migrate
 - `/profile`: TOEIC·OPIc·TOEIC Speaking, 한국사, 컴퓨터활용능력을 포함한 단일 자격 프로필
 - `/postings/add`: 링크·이미지 공고 분석
 - `/postings/review`: 분석 결과 검토·저장
+- `/postings/[id]`: 모집인원·상세 내용·지원 자격 및 원본 링크를 포함한 공고 상세
 
 ## 공고 API
 

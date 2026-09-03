@@ -30,16 +30,19 @@ enum RequiredFlag {
 }
 
 model JobPosting {
-  id             String                @id @default(cuid())
-  enterpriseType EnterpriseType
-  company        String?
-  jobRole        String?
-  title          String
-  deadline       DateTime?
-  jobCategory    String?
-  source         PostingSource         @default(CRAWLED)
-  createdAt      DateTime              @default(now())
-  criteria       EvaluationCriterion[]
+  id               String                @id @default(cuid())
+  enterpriseType   EnterpriseType
+  company          String?
+  jobRole          String?
+  title            String
+  deadline         DateTime?
+  jobCategory      String?
+  recruitmentCount String?
+  details          String?
+  originalUrl      String?
+  source           PostingSource         @default(CRAWLED)
+  createdAt        DateTime              @default(now())
+  criteria         EvaluationCriterion[]
 
   @@index([enterpriseType, createdAt])
   @@index([deadline])
@@ -47,14 +50,14 @@ model JobPosting {
 }
 
 model EvaluationCriterion {
-  id              String        @id @default(cuid())
-  postingId       String
-  posting         JobPosting    @relation(fields: [postingId], references: [id], onDelete: Cascade)
-  type            CriterionType
-  requiredFlag    RequiredFlag
-  languageRequirements Json       @default("[]")
-  cutoffScore     Int?
-  acceptableCerts String[]      @default([])
+  id                   String        @id @default(cuid())
+  postingId            String
+  posting              JobPosting    @relation(fields: [postingId], references: [id], onDelete: Cascade)
+  type                 CriterionType
+  requiredFlag         RequiredFlag
+  languageRequirements Json          @default("[]")
+  cutoffScore          Int?
+  acceptableCerts      String[]      @default([])
 
   @@unique([postingId, type])
   @@index([postingId])

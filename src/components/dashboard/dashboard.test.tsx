@@ -17,6 +17,9 @@ const publicPosting = {
   title: "2026년 하반기 신입사원 채용",
   deadline: "2026-09-10T00:00:00.000Z",
   jobCategory: "IT",
+  recruitmentCount: "2명",
+  details: "전산 시스템 개발 및 운영",
+  originalUrl: "https://example.com/jobs/public-1",
   source: PostingSource.USER,
   createdAt: "2026-09-02T00:00:00.000Z",
   criteria: [],
@@ -106,6 +109,8 @@ describe("Dashboard", () => {
       await screen.findByText("2026년 하반기 신입사원 채용"),
     ).not.toBeNull();
     expect(screen.getAllByText("프론트엔드 개발")).toHaveLength(2);
+    expect(screen.getByRole("link", { name: /2026년 하반기 신입사원 채용/ }).getAttribute("href")).toBe("/postings/public-1");
+    expect(screen.getAllByText("모집 2명").length).toBeGreaterThan(0);
     expect(screen.getByText("800")).not.toBeNull();
     expect(screen.getAllByText("기준 정보 없음")).toHaveLength(2);
   });

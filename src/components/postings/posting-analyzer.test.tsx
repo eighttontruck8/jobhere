@@ -21,6 +21,9 @@ const analyzedDraft = {
   title: "백엔드 개발자 채용",
   deadline: "2026-09-30T00:00:00.000Z",
   jobCategory: "개발",
+  recruitmentCount: null,
+  details: null,
+  originalUrl: null,
   source: PostingSource.CRAWLED,
   criteria: [],
 };

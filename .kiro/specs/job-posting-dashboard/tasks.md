@@ -246,14 +246,20 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
   - [x] 12.4 공고 추가 및 Review 페이지 (`/postings/add`, `/postings/review`) 구현
     - add: 링크/이미지 제출 → `/api/analyze` 트리거, 오류 시 원본 소스 보존 표시(R4.6, R4.7, R4.8)
     - review: 추출 draft 편집 표시(R5.1), 편집 반영(R5.2), 필수 필드 검증 저장(R5.3), 저장/취소(R5.4, R5.5, R5.6)
-    - _Requirements: 4.1, 4.2, 4.6, 4.7, 4.8, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6_
+    - 모집인원·상세 내용·실제 원본 URL 추출/검토/저장(R4.9, R5.7)
+    - _Requirements: 4.1, 4.2, 4.6, 4.7, 4.8, 4.9, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7_
 
   - [x]* 12.5 Review 편집 반영 property test
     - **Feature: job-posting-dashboard, Property 17: 검토 편집 반영 — For any Review_Screen에서의 필드 편집에 대해, 저장 대상 draft 데이터는 편집된 값을 정확히 반영해야 한다.**
     - **Validates: Requirements 5.2**
     - 최소 100회 반복
 
-  - [ ] 12.6 적합도(Fit) 표시 와이어링
+  - [x] 12.6 공고 상세 페이지 및 카드 링크 구현
+    - 최신 공고 카드를 `/postings/[id]`로 연결하고 기본 정보·모집인원·상세 내용·지원 자격 표시
+    - 저장된 원본 URL을 새 창 하이퍼링크로 제공
+    - _Requirements: 1.6, 1.7_
+
+  - [ ] 12.7 적합도(Fit) 표시 와이어링
     - 공고별 적합도 요청 → `/api/postings/:id/fit` 호출 → 충족/미충족·합격 가능성% 표시, 누락 항목 안내(R7.4), 프로필 미존재(R7.5)·cutoff 미정의(R7.6) 안내
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6_
 

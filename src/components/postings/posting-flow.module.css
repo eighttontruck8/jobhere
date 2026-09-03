@@ -12,8 +12,9 @@
 .analyzerBody { display: grid; gap: 22px; padding: clamp(24px, 5vw, 44px); }
 .stackField { display: grid; align-content: start; gap: 8px; color: #334155; font-size: .9rem; font-weight: 700; }
 .stackField em { color: #94a3b8; font-size: .78rem; font-style: normal; font-weight: 600; }
-.stackField input, .stackField select { width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 10px; color: var(--foreground); background: #fff; font-size: .95rem; }
-.stackField input:focus, .stackField select:focus { border-color: var(--primary); outline: 3px solid rgb(49 87 213 / 12%); }
+.stackField input, .stackField select, .stackField textarea { width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 10px; color: var(--foreground); background: #fff; font: inherit; font-size: .95rem; }
+.stackField textarea { resize: vertical; line-height: 1.65; }
+.stackField input:focus, .stackField select:focus, .stackField textarea:focus { border-color: var(--primary); outline: 3px solid rgb(49 87 213 / 12%); }
 .stackField input[aria-invalid="true"] { border-color: #dc2626; }
 .stackField small { color: var(--muted); font-size: .78rem; font-weight: 500; line-height: 1.5; }
 .uploadBox { display: grid; place-items: center; min-height: 210px; gap: 8px; padding: 30px; border: 1px dashed #94a3b8; border-radius: 14px; color: #334155; background: #f8fafc; cursor: pointer; }

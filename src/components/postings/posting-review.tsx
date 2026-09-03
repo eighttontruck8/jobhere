@@ -235,11 +235,20 @@ export function PostingReview({ fetcher }: PostingReviewProps) {
                 <label className={`${styles.stackField} ${styles.wideField}`}><span>직무 카테고리</span>
                   <input placeholder="예: 개발·데이터" value={draft.jobCategory ?? ""} onChange={(event) => updateDraft(draftIndex, { jobCategory: event.target.value })} />
                 </label>
+                <label className={styles.stackField}><span>모집인원</span>
+                  <input placeholder="예: 3명 또는 00명" value={draft.recruitmentCount ?? ""} onChange={(event) => updateDraft(draftIndex, { recruitmentCount: event.target.value || null })} />
+                </label>
+                <label className={styles.stackField}><span>원본 공고 링크</span>
+                  <input placeholder="https://..." type="url" value={draft.originalUrl ?? ""} onChange={(event) => updateDraft(draftIndex, { originalUrl: event.target.value || null })} />
+                </label>
+                <label className={`${styles.stackField} ${styles.wideField}`}><span>상세 내용</span>
+                  <textarea rows={7} placeholder="담당 업무, 지원 자격, 우대 사항, 전형 절차 등" value={draft.details ?? ""} onChange={(event) => updateDraft(draftIndex, { details: event.target.value || null })} />
+                </label>
               </div>
 
               <section className={styles.criteriaSection}>
                 <div className={styles.criteriaHeader}>
-                  <div><h3>지원 자격</h3><p>점수와 인정 자격증을 공고 기준에 맞게 수정하세요.</p></div>
+                  <div><h3>지원 자격</h3><p>시험별 점수·등급과 인정 자격증을 공고 기준에 맞게 수정하세요.</p></div>
                   <button className={styles.secondaryButton} type="button" onClick={() => updateDraft(draftIndex, { criteria: [...draft.criteria, { ...emptyCriterion }] })}>자격 추가</button>
                 </div>
                 {draft.criteria.length === 0 ? <p className={styles.criteriaEmpty}>추출된 지원 자격이 없습니다.</p> : draft.criteria.map((criterion, criterionIndex) => (

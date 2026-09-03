@@ -19,6 +19,9 @@ function toDomainPosting(posting: PrismaPostingWithCriteria): JobPosting {
     title: posting.title,
     deadline: posting.deadline,
     jobCategory: posting.jobCategory,
+    recruitmentCount: posting.recruitmentCount,
+    details: posting.details,
+    originalUrl: posting.originalUrl,
     source: posting.source,
     createdAt: posting.createdAt,
     criteria: posting.criteria.map((criterion) => ({
@@ -68,6 +71,9 @@ export class PrismaPostingRepository implements PostingRepository {
         title: draft.title,
         deadline: draft.deadline,
         jobCategory: draft.jobCategory,
+        recruitmentCount: draft.recruitmentCount ?? null,
+        details: draft.details ?? null,
+        originalUrl: draft.originalUrl ?? null,
         source: draft.source,
         criteria: {
           create: draft.criteria.map((criterion) => ({

@@ -94,6 +94,9 @@ function parsePosting(value: unknown): ExtractedPosting {
     title: value.title,
     deadline: parseDeadline(value.deadline),
     jobCategory: parseNullableString(value.jobCategory),
+    recruitmentCount: parseNullableString(value.recruitmentCount),
+    details: parseNullableString(value.details),
+    originalUrl: null,
     source: PostingSource.USER,
     criteria: parseCriteria(value.criteria),
   };
