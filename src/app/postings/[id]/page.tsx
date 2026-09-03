@@ -23,6 +23,12 @@ const criterionLabels = {
   [CriterionType.OTHER_CERT]: "기타 자격증",
 };
 
+const processStepEmojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"];
+
+function processStepEmoji(index: number): string {
+  return processStepEmojis[index] ?? `${index + 1}.`;
+}
+
 function criterionValue(criterion: EvaluationCriterion): string {
   if (criterion.type === CriterionType.LANGUAGE) {
     return criterion.languageRequirements.length > 0
@@ -86,11 +92,22 @@ export default async function PostingDetailPage({ params }: { params: Promise<{ 
             {detailSections.map((section) => (
               <section className={styles.detailSection} key={section.title}>
                 <h3>[{section.title}]</h3>
-                <ul>
-                  {section.items.map((item, index) => (
-                    <li className={section.title === "전형순서" ? styles.process : undefined} key={`${item}-${index}`}>{item}</li>
-                  ))}
-                </ul>
+                {section.title === "전형순서" ? (
+                  <ol className={styles.processList}>
+                    {section.items.map((item, index) => (
+                      <li key={`${item}-${index}`}>
+                        <span aria-hidden="true">{processStepEmoji(index)}</span>
+                        <strong>{item}</strong>
+                      </li>
+                    ))}
+                  </ol>
+                ) : (
+                  <ul>
+                    {section.items.map((item, index) => (
+                      <li key={`${item}-${index}`}>{item}</li>
+                    ))}
+                  </ul>
+                )}
               </section>
             ))}
           </div>

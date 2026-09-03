@@ -74,6 +74,9 @@ describe("OpenAiResponsesGateway", () => {
     expect(init?.headers).toMatchObject({ authorization: "Bearer test-key" });
     expect(body.model).toBe("test-model");
     expect(body.input[0].content[0].text).toContain("개발자 채용 원문");
+    expect(body.input[0].content[0].text).toContain("M/D(요일)");
+    expect(body.input[0].content[0].text).toContain("온라인 이의제기");
+    expect(body.input[0].content[0].text).toContain("/ 📍지명");
     expect(body.text.format).toMatchObject({
       strict: true,
       schema: JOB_POSTINGS_JSON_SCHEMA,

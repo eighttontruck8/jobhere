@@ -35,6 +35,82 @@ const SECTION_ORDER = [
   "기타",
 ] as const;
 
+const PROCESS_SEPARATOR_PATTERN = /\s*(?:->|→)\s*/;
+const EXCLUDED_PROCESS_PATTERN =
+  /이의\s*제기|채용\s*검증|검증\s*위원회|채용\s*심사\s*위원회|합격자?\s*발표|서류\s*제출|응시\s*정보\s*등록|^임용(?:\s|$)/;
+const KOREAN_DATE_RANGE_PATTERN =
+  /(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일(?:\s*[~～-]\s*(?:(\d{4})년\s*)?(\d{1,2})월\s*(\d{1,2})일)?/g;
+const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"] as const;
+
+function formatShortDate(year: number, month: number, day: number): string {
+  const weekday = WEEKDAYS[new Date(Date.UTC(year, month - 1, day)).getUTCDay()];
+  return `${month}/${day}(${weekday})`;
+}
+
+function normalizeScheduleDate(value: string): string {
+  return value.trim().replace(
+    KOREAN_DATE_RANGE_PATTERN,
+    (_, startYear: string, startMonth: string, startDay: string, endYear?: string, endMonth?: string, endDay?: string) => {
+      const start = formatShortDate(Number(startYear), Number(startMonth), Number(startDay));
+      if (!endMonth || !endDay) return start;
+      const end = formatShortDate(Number(endYear ?? startYear), Number(endMonth), Number(endDay));
+      return `${start}-${end}`;
+    },
+  );
+}
+
+function normalizeStageName(value: string): string {
+  return value
+    .trim()
+    .replace(/^(?:\d+\s*[.)]|[1-9]️⃣)\s*/, "")
+    .replace(/^서류전형$/, "서류")
+    .replace(/^필기전형$/, "필기")
+    .replace(/^면접전형$/, "면접");
+}
+
+function normalizeLocation(value: string | undefined): string | null {
+  if (!value) return null;
+  const location = value.trim().replace(/^장소\s*:\s*/, "");
+  if (!location) return null;
+  if (/비대면|온라인|화상/.test(location)) return "💻비대면";
+  return `📍${location}`;
+}
+
+function normalizeProcessStage(value: string): string | null {
+  const stage = value.trim();
+  if (!stage || EXCLUDED_PROCESS_PATTERN.test(stage)) return null;
+
+  const metadata = /^(.*?)\s*\(\s*날짜\s*:\s*(.*?)(?:,\s*장소\s*:\s*(.*?))?\s*\)$/.exec(stage);
+  if (metadata) {
+    const name = normalizeStageName(metadata[1]);
+    const date = normalizeScheduleDate(metadata[2]);
+    const location = normalizeLocation(metadata[3]);
+    return `${name}${date ? ` ${date}` : ""}${location ? ` / ${location}` : ""}`;
+  }
+
+  return normalizeScheduleDate(stage)
+    .replace(/\s*\/?\s*장소\s*:\s*([^,]+)/g, (_, location: string) => {
+      const normalized = normalizeLocation(location);
+      return normalized ? ` / ${normalized}` : "";
+    })
+    .trim();
+}
+
+function normalizeProcessItems(items: string[]): string[] {
+  return items
+    .flatMap((item) => item.split(PROCESS_SEPARATOR_PATTERN))
+    .map(normalizeProcessStage)
+    .filter((item): item is string => Boolean(item));
+}
+
+function normalizeSections(sections: PostingDetailSection[]): PostingDetailSection[] {
+  return sections
+    .map((section) => section.title === "전형순서"
+      ? { ...section, items: normalizeProcessItems(section.items) }
+      : section)
+    .filter(({ items }) => items.length > 0);
+}
+
 function classifyLegacyItem(item: string): string {
   if (/근무지|근무 지역|근무장소/.test(item)) return "근무지";
   if (/임용|입사 예정|입사일/.test(item)) return "임용예정일자";
@@ -118,11 +194,11 @@ export function parsePostingDetails(details: string): PostingDetailSection[] {
       grouped.set(title, [...(grouped.get(title) ?? []), normalized]);
     }
 
-    return SECTION_ORDER.flatMap((title) => {
+    return normalizeSections(SECTION_ORDER.flatMap((title) => {
       const items = grouped.get(title);
       return items ? [{ title, items }] : [];
-    });
+    }));
   }
 
-  return sections.filter(({ items }) => items.length > 0);
+  return normalizeSections(sections);
 }
