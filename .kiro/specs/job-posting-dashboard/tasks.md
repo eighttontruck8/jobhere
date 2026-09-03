@@ -65,18 +65,18 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
 
 - [x] 3. 순수 유틸리티 — 검증 및 적합도 계산
   - [x] 3.1 validateProfile 순수 함수 구현
-    - languageScore 정수 0~990, koreanHistoryGrade 정수 1~6, certifications 항목당 ≤100자·최대 50개
+    - TOEIC 0~990, OPIc/TOEIC Speaking 시험별 등급, 한국사 1~3급, 컴활 1~2급, certifications 항목당 ≤100자·최대 50개
     - 위반 시 위반 필드 식별하는 ValidationResult 반환
     - _Requirements: 6.2_
 
   - [x]* 3.2 validateProfile property test
-    - **Feature: job-posting-dashboard, Property 20: 자격 프로필 검증 — For any Credential_Profile 입력에 대해, 어학 0~990, 한국사 1~6, 자격증 항목당 ≤100자·최대 50개 제약을 모두 만족할 때만 저장이 수락되며, 위반 시 저장이 거부되고 위반 필드가 식별되며 기존 저장 값이 유지되어야 한다.**
+    - **Feature: job-posting-dashboard, Property 20: 자격 프로필 검증 — For any Credential_Profile 입력에 대해, 시험별 어학 범위·등급, 한국사 1~3급, 컴활 1~2급, 자격증 항목당 ≤100자·최대 50개 제약을 모두 만족할 때만 저장이 수락되어야 한다.**
     - **Validates: Requirements 6.2**
     - 최소 100회 반복
 
   - [x] 3.3 computeFit 순수 함수 구현
     - 필수(REQUIRED) criterion만 대상, 필수 없으면 computable=false
-    - 대응 점수 없음 → 미충족 + missing, 점수 ≥ cutoff → 충족, 미만 → 미충족(한국사 등급 매핑 포함)
+    - 어학은 동일 시험끼리 독립 비교하고 환산표 대체 기준 중 하나를 만족하면 충족, 한국사·컴활은 작은 급수가 더 높은 등급으로 판정
     - passLikelihoodPercent = round(satisfied / total × 100), 0~100
     - _Requirements: 7.2, 7.3, 7.4, 7.6_
 

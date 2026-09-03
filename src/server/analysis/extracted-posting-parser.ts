@@ -3,6 +3,7 @@ import {
   EnterpriseType,
   PostingSource,
   RequiredFlag,
+  isLanguageRequirement,
   type EvaluationCriterionDraft,
 } from "@/domain";
 import type { ExtractedPosting } from "./analysis-types";
@@ -55,9 +56,12 @@ function parseCriteria(value: unknown): EvaluationCriterionDraft[] {
 
     const cutoffScore = criterion.cutoffScore ?? null;
     const acceptableCerts = criterion.acceptableCerts ?? [];
+    const languageRequirements = criterion.languageRequirements ?? [];
 
     if (
       (cutoffScore !== null && !Number.isInteger(cutoffScore)) ||
+      !Array.isArray(languageRequirements) ||
+      !languageRequirements.every(isLanguageRequirement) ||
       !Array.isArray(acceptableCerts) ||
       !acceptableCerts.every((item) => typeof item === "string")
     ) {
@@ -67,6 +71,7 @@ function parseCriteria(value: unknown): EvaluationCriterionDraft[] {
     return {
       type: criterion.type,
       requiredFlag: criterion.requiredFlag,
+      languageRequirements,
       cutoffScore: cutoffScore as number | null,
       acceptableCerts,
     };

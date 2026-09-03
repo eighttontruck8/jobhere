@@ -3,6 +3,7 @@ import {
   EnterpriseType,
   PostingSource,
   RequiredFlag,
+  isLanguageRequirement,
   type EvaluationCriterionDraft,
   type JobPostingDraft,
 } from "@/domain";
@@ -56,9 +57,12 @@ function parseCriteria(value: unknown): EvaluationCriterionDraft[] {
 
     const cutoffScore = item.cutoffScore ?? null;
     const acceptableCerts = item.acceptableCerts ?? [];
+    const languageRequirements = item.languageRequirements ?? [];
 
     if (
       (cutoffScore !== null && !Number.isInteger(cutoffScore)) ||
+      !Array.isArray(languageRequirements) ||
+      !languageRequirements.every(isLanguageRequirement) ||
       !Array.isArray(acceptableCerts) ||
       !acceptableCerts.every((certification) => typeof certification === "string")
     ) {
@@ -68,6 +72,7 @@ function parseCriteria(value: unknown): EvaluationCriterionDraft[] {
     return {
       type: item.type,
       requiredFlag: item.requiredFlag,
+      languageRequirements,
       cutoffScore: cutoffScore as number | null,
       acceptableCerts,
     };

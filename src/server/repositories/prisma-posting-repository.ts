@@ -1,5 +1,9 @@
 import type { Prisma, PrismaClient } from "@/generated/prisma/client";
-import type { JobPosting, JobPostingDraft } from "@/domain";
+import {
+  parseLanguageRequirements,
+  type JobPosting,
+  type JobPostingDraft,
+} from "@/domain";
 import type { PostingRepository } from "./posting-repository";
 
 type PrismaPostingWithCriteria = Prisma.JobPostingGetPayload<{
@@ -22,10 +26,17 @@ function toDomainPosting(posting: PrismaPostingWithCriteria): JobPosting {
       postingId: criterion.postingId,
       type: criterion.type,
       requiredFlag: criterion.requiredFlag,
+      languageRequirements: parseLanguageRequirements(criterion.languageRequirements),
       cutoffScore: criterion.cutoffScore,
       acceptableCerts: [...criterion.acceptableCerts],
     })),
   };
+}
+
+function toPrismaLanguageRequirements(
+  requirements: JobPostingDraft["criteria"][number]["languageRequirements"],
+): Prisma.InputJsonValue {
+  return requirements.map(({ testType, score, level }) => ({ testType, score, level }));
 }
 
 export class PrismaPostingRepository implements PostingRepository {
@@ -62,6 +73,7 @@ export class PrismaPostingRepository implements PostingRepository {
           create: draft.criteria.map((criterion) => ({
             type: criterion.type,
             requiredFlag: criterion.requiredFlag,
+            languageRequirements: toPrismaLanguageRequirements(criterion.languageRequirements),
             cutoffScore: criterion.cutoffScore,
             acceptableCerts: [...criterion.acceptableCerts],
           })),

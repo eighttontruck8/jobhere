@@ -1,4 +1,8 @@
-import type { CredentialProfileInput } from "@/domain";
+import {
+  isLanguageRequirement,
+  type CredentialProfileInput,
+  type LanguageRequirement,
+} from "@/domain";
 import { RequestBodyValidationError } from "./posting-draft-parser";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -12,11 +16,23 @@ export function parseCredentialProfileInput(
     throw new RequestBodyValidationError(["body"]);
   }
 
-  const { languageScore, koreanHistoryGrade, certifications } = value;
+  const {
+    languageCredentials,
+    koreanHistoryGrade,
+    computerSkillGrade,
+    certifications,
+  } = value;
   const invalidFields: string[] = [];
 
-  if (languageScore !== null && typeof languageScore !== "number") {
-    invalidFields.push("languageScore");
+  if (
+    !Array.isArray(languageCredentials) ||
+    !languageCredentials.every(isLanguageRequirement)
+  ) {
+    invalidFields.push("languageCredentials");
+  }
+
+  if (computerSkillGrade !== null && typeof computerSkillGrade !== "number") {
+    invalidFields.push("computerSkillGrade");
   }
 
   if (
@@ -38,8 +54,9 @@ export function parseCredentialProfileInput(
   }
 
   return {
-    languageScore: languageScore as number | null,
+    languageCredentials: languageCredentials as LanguageRequirement[],
     koreanHistoryGrade: koreanHistoryGrade as number | null,
+    computerSkillGrade: computerSkillGrade as number | null,
     certifications: certifications as string[],
   };
 }

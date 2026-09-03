@@ -4,6 +4,7 @@ export * from "./fit";
 export * from "./fit-calculation";
 export * from "./job-posting";
 export * from "./job-posting-utils";
+export * from "./language";
 export * from "./profile";
 export * from "./profile-validation";
 export * from "./posting-draft-validation";

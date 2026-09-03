@@ -4,6 +4,7 @@ import type {
   PostingSource,
   RequiredFlag,
 } from "./constants";
+import type { LanguageRequirement } from "./language";
 
 export type JobCategory = string;
 
@@ -12,6 +13,7 @@ export interface EvaluationCriterion {
   postingId: string;
   type: CriterionType;
   requiredFlag: RequiredFlag;
+  languageRequirements: LanguageRequirement[];
   cutoffScore: number | null;
   acceptableCerts: string[];
 }
@@ -53,6 +55,7 @@ export interface EvaluationTable {
 export interface EvaluationCriterionCell {
   type: CriterionType;
   requiredFlag: RequiredFlag | null;
+  languageRequirements: LanguageRequirement[];
   cutoffScore: number | null;
   acceptableCerts: string[];
   displayValue: string;

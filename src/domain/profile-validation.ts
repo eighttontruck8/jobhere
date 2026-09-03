@@ -3,10 +3,12 @@ import type {
   ValidationIssue,
   ValidationResult,
 } from "./profile";
+import { isLanguageRequirement } from "./language";
 
 export const PROFILE_LIMITS = {
-  languageScore: { min: 0, max: 990 },
-  koreanHistoryGrade: { min: 1, max: 6 },
+  languageCredentialCount: 3,
+  koreanHistoryGrade: { min: 1, max: 3 },
+  computerSkillGrade: { min: 1, max: 2 },
   certificationCount: 50,
   certificationLength: 100,
 } as const;
@@ -25,16 +27,14 @@ export function validateProfile(
   const issues: ValidationIssue[] = [];
 
   if (
-    input.languageScore !== null &&
-    !isIntegerInRange(
-      input.languageScore,
-      PROFILE_LIMITS.languageScore.min,
-      PROFILE_LIMITS.languageScore.max,
-    )
+    input.languageCredentials.length > PROFILE_LIMITS.languageCredentialCount ||
+    !input.languageCredentials.every(isLanguageRequirement) ||
+    new Set(input.languageCredentials.map(({ testType }) => testType)).size !==
+      input.languageCredentials.length
   ) {
     issues.push({
-      field: "languageScore",
-      message: "어학 점수는 0~990 범위의 정수여야 합니다.",
+      field: "languageCredentials",
+      message: "시험별 어학 점수 또는 등급을 올바르게 입력해 주세요.",
     });
   }
 
@@ -48,7 +48,21 @@ export function validateProfile(
   ) {
     issues.push({
       field: "koreanHistoryGrade",
-      message: "한국사 등급은 1~6 범위의 정수여야 합니다.",
+      message: "한국사 등급은 1~3급 중에서 선택해 주세요.",
+    });
+  }
+
+  if (
+    input.computerSkillGrade !== null &&
+    !isIntegerInRange(
+      input.computerSkillGrade,
+      PROFILE_LIMITS.computerSkillGrade.min,
+      PROFILE_LIMITS.computerSkillGrade.max,
+    )
+  ) {
+    issues.push({
+      field: "computerSkillGrade",
+      message: "컴퓨터활용능력 등급은 1~2급 중에서 선택해 주세요.",
     });
   }
 

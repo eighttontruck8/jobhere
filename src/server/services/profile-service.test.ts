@@ -2,6 +2,7 @@ import fc from "fast-check";
 import { describe, expect, it, vi } from "vitest";
 import {
   CREDENTIAL_PROFILE_ID,
+  LanguageTestType,
   type CredentialProfile,
   type CredentialProfileInput,
 } from "@/domain";
@@ -37,16 +38,18 @@ describe("ProfileService", () => {
   it("rejects invalid input and preserves the stored profile", async () => {
     const existing: CredentialProfile = {
       id: CREDENTIAL_PROFILE_ID,
-      languageScore: 800,
+      languageCredentials: [{ testType: LanguageTestType.TOEIC, score: 800, level: null }],
       koreanHistoryGrade: 2,
+      computerSkillGrade: 2,
       certifications: ["정보처리기사"],
       updatedAt: new Date("2026-01-01"),
     };
     const repository = createMemoryRepository(existing);
     const service = new ProfileService(repository);
     const result = await service.saveProfile({
-      languageScore: 991,
+      languageCredentials: [{ testType: LanguageTestType.TOEIC, score: 991, level: null }],
       koreanHistoryGrade: 2,
+      computerSkillGrade: 2,
       certifications: [],
     });
 
@@ -63,8 +66,9 @@ describe("ProfileService", () => {
 
     await expect(
       new ProfileService(repository).saveProfile({
-        languageScore: 900,
+        languageCredentials: [{ testType: LanguageTestType.TOEIC, score: 900, level: null }],
         koreanHistoryGrade: 1,
+        computerSkillGrade: 1,
         certifications: [],
       }),
     ).resolves.toEqual({
@@ -74,10 +78,8 @@ describe("ProfileService", () => {
   });
 
   it("Feature: job-posting-dashboard, Property 19: 자격 프로필 왕복", async () => {
-    const optionalLanguage = fc.option(fc.integer({ min: 0, max: 990 }), {
-      nil: null,
-    });
-    const optionalHistory = fc.option(fc.integer({ min: 1, max: 6 }), {
+    const optionalLanguage = fc.array(fc.constant({ testType: LanguageTestType.TOEIC, score: 900, level: null }), { maxLength: 1 });
+    const optionalHistory = fc.option(fc.integer({ min: 1, max: 3 }), {
       nil: null,
     });
     const certification = fc
@@ -89,10 +91,11 @@ describe("ProfileService", () => {
         optionalLanguage,
         optionalHistory,
         fc.array(certification, { maxLength: 50 }),
-        async (languageScore, koreanHistoryGrade, certifications) => {
+        async (languageCredentials, koreanHistoryGrade, certifications) => {
           const input = {
-            languageScore,
+            languageCredentials,
             koreanHistoryGrade,
+            computerSkillGrade: null,
             certifications,
           };
           const service = new ProfileService(createMemoryRepository());

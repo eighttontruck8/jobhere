@@ -7,6 +7,7 @@ import {
   EnterpriseType,
   PostingSource,
   RequiredFlag,
+  LanguageTestType,
   addToEvaluationTable,
   buildEvaluationTable,
   type EvaluationCriterion,
@@ -31,6 +32,9 @@ function createCriterion(
     postingId,
     type,
     requiredFlag,
+    languageRequirements: type === CriterionType.LANGUAGE && cutoffScore !== null
+      ? [{ testType: LanguageTestType.TOEIC, score: cutoffScore, level: null }]
+      : [],
     cutoffScore,
     acceptableCerts,
   };
@@ -79,7 +83,7 @@ describe("buildEvaluationTable", () => {
 
     const [row] = buildEvaluationTable([posting]).rows;
 
-    expect(row.criteria.LANGUAGE.displayValue).toBe("850");
+    expect(row.criteria.LANGUAGE.displayValue).toBe("TOEIC 850점");
     expect(row.criteria.KOREAN_HISTORY.displayValue).toBe(
       EVALUATION_TABLE_PLACEHOLDERS.cutoff,
     );

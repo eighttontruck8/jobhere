@@ -1,6 +1,12 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { EnterpriseType, PostingSource } from "@/domain";
+import {
+  CriterionType,
+  EnterpriseType,
+  LanguageTestType,
+  PostingSource,
+  RequiredFlag,
+} from "@/domain";
 import { PostingReview } from "./posting-review";
 import { readReviewDrafts, writeReviewDrafts, type SerializedPostingDraft } from "./posting-flow";
 
@@ -104,5 +110,33 @@ describe("PostingReview", () => {
 
     expect(readReviewDrafts(sessionStorage)).toEqual([]);
     expect(push).toHaveBeenCalledWith("/postings/add");
+  });
+
+  it("시험별 어학 기준을 독립적으로 수정해 임시 공고에 보존한다", async () => {
+    writeReviewDrafts(sessionStorage, [draft({
+      criteria: [{
+        type: CriterionType.LANGUAGE,
+        requiredFlag: RequiredFlag.REQUIRED,
+        languageRequirements: [{
+          testType: LanguageTestType.OPIC,
+          score: null,
+          level: "IH",
+        }],
+        cutoffScore: null,
+        acceptableCerts: [],
+      }],
+    })]);
+    render(<PostingReview fetcher={vi.fn()} />);
+
+    const opic = await screen.findByLabelText("OPIc 최저 등급");
+    expect((opic as HTMLSelectElement).value).toBe("IH");
+    fireEvent.change(screen.getByLabelText("TOEIC Speaking 최저 등급"), {
+      target: { value: "AL" },
+    });
+
+    expect(readReviewDrafts(sessionStorage)[0].criteria[0].languageRequirements).toEqual([
+      { testType: LanguageTestType.OPIC, score: null, level: "IH" },
+      { testType: LanguageTestType.TOEIC_SPEAKING, score: null, level: "AL" },
+    ]);
   });
 });

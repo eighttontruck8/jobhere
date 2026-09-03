@@ -3,6 +3,7 @@ import {
   EnterpriseType,
   PostingSource,
   RequiredFlag,
+  isLanguageRequirement,
   type EvaluationCriterionDraft,
   type JobPostingDraft,
 } from "@/domain";
@@ -49,11 +50,15 @@ function parseCriteria(value: unknown): EvaluationCriterionDraft[] {
 
     const cutoffScore = criterion.cutoffScore;
     const acceptableCerts = criterion.acceptableCerts;
+    const languageRequirements = criterion.languageRequirements;
 
     return [
       {
         type: criterion.type,
         requiredFlag: criterion.requiredFlag,
+        languageRequirements: Array.isArray(languageRequirements)
+          ? languageRequirements.filter(isLanguageRequirement)
+          : [],
         cutoffScore: Number.isInteger(cutoffScore)
           ? (cutoffScore as number)
           : null,

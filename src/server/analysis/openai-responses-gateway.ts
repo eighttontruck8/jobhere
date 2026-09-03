@@ -3,9 +3,16 @@ import type { RawContent } from "./source-parser";
 
 export const JOB_POSTING_EXTRACTION_INSTRUCTIONS = `
 채용 공고 원문에서 직무별 공고를 추출해 JSON으로 반환하세요.
-enterpriseType은 PUBLIC 또는 PRIVATE, criterion type은 LANGUAGE, KOREAN_HISTORY, OTHER_CERT,
+enterpriseType은 PUBLIC 또는 PRIVATE, criterion type은 LANGUAGE, KOREAN_HISTORY, COMPUTER_SKILL, OTHER_CERT,
 requiredFlag는 REQUIRED 또는 OPTIONAL만 사용하세요. 알 수 없는 nullable 필드는 null,
 평가 기준을 찾지 못하면 criteria는 빈 배열로 반환하세요. 원문에 여러 직무가 있으면 각각 분리하세요.
+LANGUAGE의 languageRequirements에는 공고가 인정하는 TOEIC, OPIc, TOEIC Speaking 기준을 각각 넣으세요.
+testType은 TOEIC, OPIC, TOEIC_SPEAKING 중 하나입니다. TOEIC은 score(0~990)를 사용하고 level은 null로,
+OPIc은 IL, IM1, IM2, IM3, IH, AL 중 level을 사용하고 score는 null로,
+TOEIC Speaking은 IL, IM, IH, AL, AM, AH 중 level을 사용하고 score는 null로 반환하세요.
+같은 표에 제시된 여러 어학 시험은 대체 가능한 기준이므로 한 LANGUAGE 항목의 languageRequirements에 함께 넣으세요.
+KOREAN_HISTORY는 1~3급, COMPUTER_SKILL은 컴퓨터활용능력 1~2급을 cutoffScore에 넣으세요.
+LANGUAGE 외 항목은 languageRequirements를 빈 배열로 반환하세요.
 `.trim();
 
 export const JOB_POSTINGS_JSON_SCHEMA = {
@@ -42,13 +49,30 @@ export const JOB_POSTINGS_JSON_SCHEMA = {
               required: [
                 "type",
                 "requiredFlag",
+                "languageRequirements",
                 "cutoffScore",
                 "acceptableCerts",
               ],
               properties: {
                 type: {
                   type: "string",
-                  enum: ["LANGUAGE", "KOREAN_HISTORY", "OTHER_CERT"],
+                  enum: ["LANGUAGE", "KOREAN_HISTORY", "COMPUTER_SKILL", "OTHER_CERT"],
+                },
+                languageRequirements: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    additionalProperties: false,
+                    required: ["testType", "score", "level"],
+                    properties: {
+                      testType: {
+                        type: "string",
+                        enum: ["TOEIC", "OPIC", "TOEIC_SPEAKING"],
+                      },
+                      score: { type: ["integer", "null"] },
+                      level: { type: ["string", "null"] },
+                    },
+                  },
                 },
                 requiredFlag: {
                   type: "string",

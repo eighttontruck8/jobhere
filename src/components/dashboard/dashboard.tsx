@@ -41,6 +41,7 @@ interface DashboardProps {
 const criterionColumns = [
   { type: CriterionType.LANGUAGE, label: "어학" },
   { type: CriterionType.KOREAN_HISTORY, label: "한국사" },
+  { type: CriterionType.COMPUTER_SKILL, label: "컴활" },
   { type: CriterionType.OTHER_CERT, label: "기타 자격증" },
 ] as const;
 

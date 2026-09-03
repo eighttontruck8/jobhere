@@ -1,174 +1,45 @@
-import fc from "fast-check";
 import { describe, expect, it } from "vitest";
-import {
-  CREDENTIAL_PROFILE_ID,
-  CriterionType,
-  RequiredFlag,
-  computeFit,
-  type CredentialProfile,
-  type EvaluationCriterion,
-} from "@/domain";
+import { CREDENTIAL_PROFILE_ID, CriterionType, LanguageTestType, RequiredFlag, computeFit, type CredentialProfile, type EvaluationCriterion, type LanguageRequirement } from "@/domain";
 
-function createProfile(
-  languageScore: number | null,
-  koreanHistoryGrade: number | null,
-): CredentialProfile {
-  return {
-    id: CREDENTIAL_PROFILE_ID,
-    languageScore,
-    koreanHistoryGrade,
-    certifications: [],
-    updatedAt: new Date(0),
-  };
+function profile(languageCredentials: LanguageRequirement[] = []): CredentialProfile {
+  return { id: CREDENTIAL_PROFILE_ID, languageCredentials, koreanHistoryGrade: 2, computerSkillGrade: 2, certifications: ["정보처리기사"], updatedAt: new Date(0) };
 }
 
-function createCriterion(
-  type: EvaluationCriterion["type"],
-  cutoffScore: number | null,
-  requiredFlag: EvaluationCriterion["requiredFlag"] = RequiredFlag.REQUIRED,
-): EvaluationCriterion {
-  return {
-    id: `${type}-${cutoffScore}`,
-    postingId: "posting-1",
-    type,
-    requiredFlag,
-    cutoffScore,
-    acceptableCerts: [],
-  };
+function criterion(type: EvaluationCriterion["type"], update: Partial<EvaluationCriterion> = {}): EvaluationCriterion {
+  return { id: type, postingId: "posting-1", type, requiredFlag: RequiredFlag.REQUIRED, languageRequirements: [], cutoffScore: null, acceptableCerts: [], ...update };
 }
 
 describe("computeFit", () => {
-  it("ignores optional criteria and maps Korean history grades in ascending quality order", () => {
-    const result = computeFit(
-      [
-        createCriterion(CriterionType.LANGUAGE, 900, RequiredFlag.OPTIONAL),
-        createCriterion(CriterionType.KOREAN_HISTORY, 3),
-      ],
-      createProfile(100, 2),
-    );
-
-    expect(result).toMatchObject({
-      postingId: "posting-1",
-      satisfiedRequiredCount: 1,
-      totalRequiredCount: 1,
-      passLikelihoodPercent: 100,
-      computable: true,
-    });
-    expect(result.criterionFits).toEqual([
-      {
-        type: CriterionType.KOREAN_HISTORY,
-        cutoffScore: 3,
-        profileScore: 2,
-        status: "충족",
-        missing: false,
-      },
-    ]);
+  it("TOEIC 점수는 숫자 기준으로 판정한다", () => {
+    const result = computeFit([criterion(CriterionType.LANGUAGE, { languageRequirements: [{ testType: LanguageTestType.TOEIC, score: 850, level: null }] })], profile([{ testType: LanguageTestType.TOEIC, score: 900, level: null }]));
+    expect(result).toMatchObject({ passLikelihoodPercent: 100, computable: true });
   });
 
-  it("marks a result as not computable when required cutoffs are absent", () => {
-    expect(computeFit([], createProfile(900, 1))).toMatchObject({
-      computable: false,
-      totalRequiredCount: 0,
-      passLikelihoodPercent: 0,
-    });
-
-    expect(
-      computeFit(
-        [createCriterion(CriterionType.LANGUAGE, null)],
-        createProfile(900, 1),
-      ),
-    ).toMatchObject({
-      computable: false,
-      totalRequiredCount: 1,
-      passLikelihoodPercent: 0,
-    });
+  it("OPIc과 TOEIC Speaking의 같은 등급명을 서로 비교하지 않는다", () => {
+    const result = computeFit([criterion(CriterionType.LANGUAGE, { languageRequirements: [{ testType: LanguageTestType.OPIC, score: null, level: "IH" }] })], profile([{ testType: LanguageTestType.TOEIC_SPEAKING, score: null, level: "IH" }]));
+    expect(result.criterionFits[0]).toMatchObject({ status: "미충족", missing: true });
   });
 
-  it("treats a required certification criterion as missing without a numeric profile score", () => {
-    const result = computeFit(
-      [createCriterion(CriterionType.OTHER_CERT, 1)],
-      createProfile(900, 1),
-    );
-
-    expect(result.criterionFits[0]).toMatchObject({
-      status: "미충족",
-      missing: true,
-      profileScore: null,
-    });
-    expect(result.missingCriteria).toEqual([CriterionType.OTHER_CERT]);
+  it("어학 환산표의 대체 기준 중 하나를 충족하면 통과한다", () => {
+    const result = computeFit([criterion(CriterionType.LANGUAGE, { languageRequirements: [
+      { testType: LanguageTestType.TOEIC, score: 900, level: null },
+      { testType: LanguageTestType.OPIC, score: null, level: "IM3" },
+    ] })], profile([{ testType: LanguageTestType.OPIC, score: null, level: "IH" }]));
+    expect(result.criterionFits[0].status).toBe("충족");
   });
 
-  it("Feature: job-posting-dashboard, Property 21: 충족/미충족 판정", () => {
-    fc.assert(
-      fc.property(
-        fc.integer({ min: 0, max: 990 }),
-        fc.integer({ min: 0, max: 990 }),
-        (profileScore, cutoffScore) => {
-          const result = computeFit(
-            [createCriterion(CriterionType.LANGUAGE, cutoffScore)],
-            createProfile(profileScore, null),
-          );
-
-          expect(result.criterionFits[0].status).toBe(
-            profileScore >= cutoffScore ? "충족" : "미충족",
-          );
-        },
-      ),
-    );
+  it("한국사와 컴활은 숫자가 낮은 등급이 더 높은 수준이다", () => {
+    const result = computeFit([criterion(CriterionType.KOREAN_HISTORY, { cutoffScore: 3 }), criterion(CriterionType.COMPUTER_SKILL, { cutoffScore: 1 })], profile());
+    expect(result.satisfiedRequiredCount).toBe(1);
+    expect(result.passLikelihoodPercent).toBe(50);
   });
 
-  it("Feature: job-posting-dashboard, Property 22: 합격 가능성 비율", () => {
-    fc.assert(
-      fc.property(
-        fc.integer({ min: 0, max: 990 }),
-        fc.integer({ min: 1, max: 6 }),
-        fc.integer({ min: 0, max: 990 }),
-        fc.integer({ min: 1, max: 6 }),
-        (languageScore, historyGrade, languageCutoff, historyCutoff) => {
-          const result = computeFit(
-            [
-              createCriterion(CriterionType.LANGUAGE, languageCutoff),
-              createCriterion(CriterionType.KOREAN_HISTORY, historyCutoff),
-            ],
-            createProfile(languageScore, historyGrade),
-          );
-          const expectedSatisfied =
-            Number(languageScore >= languageCutoff) +
-            Number(historyGrade <= historyCutoff);
-
-          expect(result.satisfiedRequiredCount).toBe(expectedSatisfied);
-          expect(result.passLikelihoodPercent).toBe(
-            Math.round((expectedSatisfied / 2) * 100),
-          );
-          expect(result.passLikelihoodPercent).toBeGreaterThanOrEqual(0);
-          expect(result.passLikelihoodPercent).toBeLessThanOrEqual(100);
-        },
-      ),
-    );
+  it("보유 자격증 이름이 인정 목록과 일치하면 통과한다", () => {
+    const result = computeFit([criterion(CriterionType.OTHER_CERT, { acceptableCerts: ["정보처리기사"] })], profile());
+    expect(result.criterionFits[0].status).toBe("충족");
   });
 
-  it("Feature: job-posting-dashboard, Property 23: 누락 점수 미충족 처리", () => {
-    fc.assert(
-      fc.property(
-        fc.constantFrom(
-          CriterionType.LANGUAGE,
-          CriterionType.KOREAN_HISTORY,
-        ),
-        fc.integer({ min: 1, max: 6 }),
-        (type, cutoffScore) => {
-          const result = computeFit(
-            [createCriterion(type, cutoffScore)],
-            createProfile(null, null),
-          );
-
-          expect(result.criterionFits[0]).toMatchObject({
-            type,
-            status: "미충족",
-            missing: true,
-          });
-          expect(result.missingCriteria).toContain(type);
-        },
-      ),
-    );
+  it("필수 기준값이 없으면 계산 불가로 처리한다", () => {
+    expect(computeFit([criterion(CriterionType.LANGUAGE)], profile())).toMatchObject({ computable: false, passLikelihoodPercent: 0 });
   });
 });

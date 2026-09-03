@@ -21,6 +21,7 @@ describe("domain types", () => {
     expect(Object.values(CriterionType)).toEqual([
       "LANGUAGE",
       "KOREAN_HISTORY",
+      "COMPUTER_SKILL",
       "OTHER_CERT",
     ]);
     expect(Object.values(RequiredFlag)).toEqual(["REQUIRED", "OPTIONAL"]);

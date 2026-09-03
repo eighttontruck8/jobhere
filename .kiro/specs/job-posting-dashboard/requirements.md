@@ -20,14 +20,14 @@
 - **Job_Posting**: 하나의 채용 공고 레코드. 공기업/사기업 구분, 기업명, 직무, 마감 기한, 평가 기준 등을 포함한다.
 - **Public_Enterprise_Posting**: 공기업(공공기관) 채용 공고. 평가 기준 표(어학/한국사/기타 자격증)를 갖는다.
 - **Private_Company_Posting**: 사기업 채용 공고. 대기업 인턴십을 기업명 > 직무명 > 제출 마감 기한 형태로 표시한다.
-- **Evaluation_Criteria_Table**: 공기업 공고들의 평가 기준(어학, 한국사, 기타 자격증)을 통합하여 보여주는 표.
-- **Criterion**: 개별 평가 항목. 어학(language), 한국사(Korean history), 기타 자격증(other certifications) 중 하나.
+- **Evaluation_Criteria_Table**: 공기업 공고들의 평가 기준(어학, 한국사, 컴퓨터활용능력, 기타 자격증)을 통합하여 보여주는 표.
+- **Criterion**: 개별 평가 항목. 어학, 한국사, 컴퓨터활용능력, 기타 자격증 중 하나.
 - **Required_Flag**: 각 Criterion이 필수(required) 또는 선택(optional)인지 나타내는 표시.
 - **Cutoff_Score**: 필수 Criterion에 대한 커트라인 점수.
 - **Analysis_Engine**: 링크 또는 스크린샷 이미지로부터 구조화된 공고 정보를 추출하는 LLM 기반 서브시스템. 이미지의 경우 비전 지원 LLM/OCR을 사용한다.
 - **Role_Filter**: 사용자가 설정한 관심 직무 필터.
 - **Review_Screen**: 자동 분석 결과를 저장 전에 사용자가 검토·편집하는 화면.
-- **Credential_Profile**: 사용자의 어학/한국사/자격증 점수를 저장하는 단일 프로필.
+- **Credential_Profile**: 사용자의 시험별 어학/한국사/컴퓨터활용능력/자격증 정보를 저장하는 단일 프로필.
 - **Fit_Result**: Credential_Profile을 Job_Posting의 필수 커트라인과 비교하여 산출한 적합도 및 합격 가능성 결과.
 - **System**: 본 채용 공고 대시보드 애플리케이션 전체.
 
@@ -51,7 +51,7 @@
 
 #### Acceptance Criteria
 
-1. THE Evaluation_Criteria_Table SHALL 최대 20개의 Public_Enterprise_Posting을 행으로, 어학·한국사·기타 자격증 Criterion을 열로 통합하여 표시한다.
+1. THE Evaluation_Criteria_Table SHALL 최대 20개의 Public_Enterprise_Posting을 행으로, 어학·한국사·컴퓨터활용능력·기타 자격증 Criterion을 열로 통합하여 표시한다.
 2. THE Evaluation_Criteria_Table SHALL 각 Criterion에 대해 "필수" 또는 "선택" 중 하나의 Required_Flag를 표시한다.
 3. WHERE Criterion이 "선택"으로 표시된 경우, THE Evaluation_Criteria_Table SHALL 인정 가능한 자격증 목록을 표시한다.
 4. IF "선택" Criterion의 인정 가능한 자격증 목록 데이터가 없으면, THEN THE Evaluation_Criteria_Table SHALL 해당 항목에 자격증 정보가 없음을 나타내는 대체 표시를 노출한다.
@@ -108,10 +108,10 @@
 
 #### Acceptance Criteria
 
-1. WHEN 사용자가 어학 점수(0~990 범위의 정수), 한국사 등급(1~6 범위의 정수), 자격증 항목(항목당 최대 100자, 최대 50개)을 입력하고 저장하면, THE System SHALL 입력된 값을 단일 Credential_Profile에 저장하고 저장 완료 여부를 사용자에게 표시한다.
-2. IF 사용자가 허용 범위(어학 0~990, 한국사 1~6) 또는 형식(자격증 항목당 최대 100자, 최대 50개)을 벗어난 값을 입력하면, THEN THE System SHALL 해당 값을 저장하지 않고 어떤 필드가 유효하지 않은지를 나타내는 오류 표시를 제공하며 기존 저장 값을 유지한다.
+1. WHEN 사용자가 TOEIC(0~990), OPIc(IL·IM1·IM2·IM3·IH·AL), TOEIC Speaking(IL·IM·IH·AL·AM·AH), 한국사(3·2·1급), 컴퓨터활용능력(2·1급), 기타 자격증을 입력하고 저장하면, THE System SHALL 시험 종류와 점수 또는 등급을 단일 Credential_Profile에 저장하고 저장 완료 여부를 표시한다.
+2. IF 사용자가 시험별 허용 범위나 등급 또는 자격증 형식(항목당 최대 100자, 최대 50개)을 벗어난 값을 입력하면, THEN THE System SHALL 해당 값을 저장하지 않고 유효하지 않은 필드를 표시하며 기존 저장 값을 유지한다.
 3. WHEN 사용자가 Credential_Profile의 값을 수정하고 저장하면, THE System SHALL 수정된 값을 3초 이내에 Credential_Profile에 반영하고 반영 완료 여부를 사용자에게 표시한다.
-4. WHEN 사용자가 Credential_Profile 조회를 요청하면, THE System SHALL 저장된 어학 점수, 한국사 등급, 자격증 항목을 3초 이내에 표시한다.
+4. WHEN 사용자가 Credential_Profile 조회를 요청하면, THE System SHALL 저장된 시험별 어학 점수·등급, 한국사·컴퓨터활용능력 등급, 자격증 항목을 3초 이내에 표시한다.
 5. IF 사용자가 저장된 값이 없는 상태에서 Credential_Profile 조회를 요청하면, THEN THE System SHALL 저장된 자격 정보가 없음을 나타내는 안내를 표시한다.
 
 ### Requirement 7: 적합도 및 합격 가능성 계산
@@ -121,7 +121,7 @@
 #### Acceptance Criteria
 
 1. WHEN 저장된 Credential_Profile이 존재하고 사용자가 특정 Job_Posting의 적합도를 요청하면, THE System SHALL Credential_Profile의 각 점수를 해당 Job_Posting의 필수 Cutoff_Score와 비교하여 5초 이내에 Fit_Result를 산출한다.
-2. WHEN Fit_Result가 산출되면, THE System SHALL 각 필수 Criterion에 대해 Credential_Profile 점수가 해당 Cutoff_Score 이상이면 "충족", 미만이면 "미충족"으로 판정하여 표시한다.
+2. WHEN Fit_Result가 산출되면, THE System SHALL 어학은 동일 시험의 독립된 등급 순서로 비교하고 환산표의 대체 기준 중 하나 이상을 만족하면 "충족"으로, 한국사·컴퓨터활용능력은 더 높은 등급(작은 급수)을 만족하면 "충족"으로 판정한다.
 3. WHEN Fit_Result가 산출되면, THE System SHALL 합격 가능성 지표를 충족한 필수 Criterion 수 대비 전체 필수 Criterion 수의 비율(0%~100%)로 계산하여 표시한다.
 4. IF 사용자가 요청한 Job_Posting의 필수 Criterion 중 하나 이상에 대응하는 점수가 Credential_Profile에 없으면, THEN THE System SHALL 해당 Criterion을 "미충족"으로 판정하고 누락된 항목을 안내하는 메시지를 표시한다.
 5. IF Credential_Profile이 저장되어 있지 않은 상태에서 사용자가 적합도를 요청하면, THEN THE System SHALL 자격 프로필 입력이 필요함을 안내하는 메시지를 표시한다.

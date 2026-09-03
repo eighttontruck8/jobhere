@@ -1,6 +1,7 @@
-import type { PrismaClient } from "@/generated/prisma/client";
+import type { Prisma, PrismaClient } from "@/generated/prisma/client";
 import {
   CREDENTIAL_PROFILE_ID,
+  parseLanguageRequirements,
   type CredentialProfile,
   type CredentialProfileInput,
 } from "@/domain";
@@ -16,17 +17,23 @@ export class PrismaProfileRepository implements ProfileRepository {
 
     return profile
       ? {
-          ...profile,
           id: CREDENTIAL_PROFILE_ID,
+          languageCredentials: parseLanguageRequirements(profile.languageCredentials),
+          koreanHistoryGrade: profile.koreanHistoryGrade,
+          computerSkillGrade: profile.computerSkillGrade,
           certifications: [...profile.certifications],
+          updatedAt: profile.updatedAt,
         }
       : null;
   }
 
   async upsert(input: CredentialProfileInput): Promise<CredentialProfile> {
     const data = {
-      languageScore: input.languageScore,
+      languageCredentials: input.languageCredentials.map(
+        ({ testType, score, level }) => ({ testType, score, level }),
+      ) as Prisma.InputJsonValue,
       koreanHistoryGrade: input.koreanHistoryGrade,
+      computerSkillGrade: input.computerSkillGrade,
       certifications: [...input.certifications],
     };
     const profile = await this.client.credentialProfile.upsert({
@@ -36,9 +43,12 @@ export class PrismaProfileRepository implements ProfileRepository {
     });
 
     return {
-      ...profile,
       id: CREDENTIAL_PROFILE_ID,
+      languageCredentials: parseLanguageRequirements(profile.languageCredentials),
+      koreanHistoryGrade: profile.koreanHistoryGrade,
+      computerSkillGrade: profile.computerSkillGrade,
       certifications: [...profile.certifications],
+      updatedAt: profile.updatedAt,
     };
   }
 }

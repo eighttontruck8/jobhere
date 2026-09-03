@@ -236,6 +236,7 @@ enum PostingSource {
 enum CriterionType {
   LANGUAGE       // 어학
   KOREAN_HISTORY // 한국사
+  COMPUTER_SKILL // 컴퓨터활용능력
   OTHER_CERT     // 기타 자격증
 }
 
@@ -263,14 +264,16 @@ model EvaluationCriterion {
   posting         JobPosting    @relation(fields: [postingId], references: [id], onDelete: Cascade)
   type            CriterionType
   requiredFlag    RequiredFlag
+  languageRequirements Json       // TOEIC/OPIc/TOEIC Speaking 대체 기준 배열
   cutoffScore     Int?          // 필수일 때 커트라인; null 가능 R2.6
   acceptableCerts String[]      // 선택일 때 인정 자격증; 빈 배열 가능 R2.4
 }
 
 model CredentialProfile {
   id                String   @id @default("singleton") // 단일 프로필 강제
-  languageScore     Int?     // 0~990 R6.2
-  koreanHistoryGrade Int?    // 1~6 R6.2
+  languageCredentials Json     // 시험별 점수 또는 등급
+  koreanHistoryGrade Int?    // 1~3 R6.2
+  computerSkillGrade Int?    // 1~2 R6.2
   certifications    String[] // 항목당 ≤100자, ≤50개 R6.2
   updatedAt         DateTime @updatedAt
 }
@@ -362,8 +365,9 @@ interface FitResult {
 ### Credential Profile Validation (R6.2)
 
 `validateProfile(input)` 규칙:
-- `languageScore`: 정수 0~990.
-- `koreanHistoryGrade`: 정수 1~6.
+- `languageCredentials`: TOEIC 0~990, OPIc IL→AL, TOEIC Speaking IL→AH. 시험 종류가 같은 값끼리만 비교한다.
+- `koreanHistoryGrade`: 정수 1~3.
+- `computerSkillGrade`: 정수 1~2.
 - `certifications`: 항목 수 ≤ 50, 각 항목 길이 ≤ 100자.
 - 하나라도 위반 시 저장 거부, 위반 필드 식별 반환, 기존 저장 값 유지.
 
@@ -374,8 +378,8 @@ interface FitResult {
 - 필수 criterion이 하나도 없으면 `computable = false`(R7.6).
 - 각 필수 criterion에 대해 profile의 대응 점수 조회:
   - 대응 점수 없음 → `미충족` + `missing`(R7.4).
-  - 점수 ≥ cutoffScore → `충족`, 미만 → `미충족`(R7.2).
-  - 한국사는 등급 체계이므로 "점수 ≥ cutoff"의 의미를 등급 기준(요구 등급 이상)에 맞춰 매핑.
+  - 어학은 동일 시험의 고유 등급 순서로 비교하며 환산표의 대체 기준 중 하나 이상을 만족하면 `충족`.
+  - 한국사와 컴퓨터활용능력은 작은 급수가 더 높은 등급으로 매핑.
 - `passLikelihoodPercent = round(satisfiedRequiredCount / totalRequiredCount * 100)`, 0~100 범위(R7.3).
 - profile 미존재 시 계산 전 안내(R7.5).
 
@@ -519,7 +523,7 @@ interface FitResult {
 
 ### Property 20: 자격 프로필 검증
 
-*For any* Credential_Profile 입력에 대해, 어학 0~990, 한국사 1~6, 자격증 항목당 ≤100자·최대 50개 제약을 모두 만족할 때만 저장이 수락되며, 위반 시 저장이 거부되고 위반 필드가 식별되며 기존 저장 값이 유지되어야 한다.
+*For any* Credential_Profile 입력에 대해, 시험별 어학 범위·등급, 한국사 1~3급, 컴퓨터활용능력 1~2급, 자격증 항목당 ≤100자·최대 50개 제약을 모두 만족할 때만 저장이 수락되며, 위반 시 저장이 거부되고 위반 필드가 식별되며 기존 저장 값이 유지되어야 한다.
 
 **Validates: Requirements 6.2**
 

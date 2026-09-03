@@ -3,9 +3,13 @@
 import {
   CriterionType,
   EnterpriseType,
+  LANGUAGE_TEST_LABELS,
+  LanguageTestType,
+  getLanguageLevels,
   RequiredFlag,
   validatePostingDraftRequiredFields,
   type EvaluationCriterionDraft,
+  type LanguageTestType as LanguageTestTypeValue,
   type RequiredPostingDraftField,
 } from "@/domain";
 import { useRouter } from "next/navigation";
@@ -31,6 +35,7 @@ interface Notice {
 const criterionLabels = {
   [CriterionType.LANGUAGE]: "어학",
   [CriterionType.KOREAN_HISTORY]: "한국사",
+  [CriterionType.COMPUTER_SKILL]: "컴퓨터활용능력",
   [CriterionType.OTHER_CERT]: "기타 자격증",
 };
 const requiredLabels = {
@@ -40,6 +45,7 @@ const requiredLabels = {
 const emptyCriterion: EvaluationCriterionDraft = {
   type: CriterionType.LANGUAGE,
   requiredFlag: RequiredFlag.REQUIRED,
+  languageRequirements: [],
   cutoffScore: null,
   acceptableCerts: [],
 };
@@ -78,6 +84,25 @@ export function PostingReview({ fetcher }: PostingReviewProps) {
       criteria: drafts[draftIndex].criteria.map((criterion, index) =>
         index === criterionIndex ? { ...criterion, ...update } : criterion),
     });
+  }
+
+  function updateLanguageRequirement(
+    draftIndex: number,
+    criterionIndex: number,
+    testType: LanguageTestTypeValue,
+    value: string,
+  ) {
+    if (!drafts) return;
+    const criterion = drafts[draftIndex].criteria[criterionIndex];
+    const remaining = criterion.languageRequirements.filter(
+      (item) => item.testType !== testType,
+    );
+    const languageRequirements = value === ""
+      ? remaining
+      : [...remaining, testType === LanguageTestType.TOEIC
+          ? { testType, score: Number(value), level: null }
+          : { testType, score: null, level: value }];
+    updateCriterion(draftIndex, criterionIndex, { languageRequirements });
   }
 
   async function saveDraft(index: number) {
@@ -220,7 +245,7 @@ export function PostingReview({ fetcher }: PostingReviewProps) {
                 {draft.criteria.length === 0 ? <p className={styles.criteriaEmpty}>추출된 지원 자격이 없습니다.</p> : draft.criteria.map((criterion, criterionIndex) => (
                   <div className={styles.criterionRow} key={criterionIndex}>
                     <label className={styles.stackField}><span>항목</span>
-                      <select aria-label={`공고 ${draftIndex + 1} 자격 ${criterionIndex + 1} 항목`} value={criterion.type} onChange={(event) => updateCriterion(draftIndex, criterionIndex, { type: event.target.value as CriterionType })}>
+                      <select aria-label={`공고 ${draftIndex + 1} 자격 ${criterionIndex + 1} 항목`} value={criterion.type} onChange={(event) => updateCriterion(draftIndex, criterionIndex, { type: event.target.value as CriterionType, languageRequirements: [], cutoffScore: null, acceptableCerts: [] })}>
                         {Object.values(CriterionType).map((type) => <option key={type} value={type}>{criterionLabels[type]}</option>)}
                       </select>
                     </label>
@@ -229,12 +254,40 @@ export function PostingReview({ fetcher }: PostingReviewProps) {
                         {Object.values(RequiredFlag).map((flag) => <option key={flag} value={flag}>{requiredLabels[flag]}</option>)}
                       </select>
                     </label>
-                    <label className={styles.stackField}><span>최저 점수</span>
-                      <input min="0" type="number" value={criterion.cutoffScore ?? ""} onChange={(event) => updateCriterion(draftIndex, criterionIndex, { cutoffScore: event.target.value === "" ? null : Number(event.target.value) })} />
-                    </label>
-                    <label className={styles.stackField}><span>인정 자격증</span>
-                      <input placeholder="쉼표로 구분" value={criterion.acceptableCerts.join(", ")} onChange={(event) => updateCriterion(draftIndex, criterionIndex, { acceptableCerts: event.target.value.split(",").map((value) => value.trim()).filter(Boolean) })} />
-                    </label>
+                    {criterion.type === CriterionType.LANGUAGE && (
+                      <div className={`${styles.stackField} ${styles.wideField}`}>
+                        <span>인정 어학 기준 (하나 이상 충족)</span>
+                        {Object.values(LanguageTestType).map((testType) => {
+                          const requirement = criterion.languageRequirements.find((item) => item.testType === testType);
+                          return (
+                            <label key={testType}>
+                              <span>{LANGUAGE_TEST_LABELS[testType]}</span>
+                              {testType === LanguageTestType.TOEIC ? (
+                                <input aria-label={`${LANGUAGE_TEST_LABELS[testType]} 최저 점수`} min="0" max="990" type="number" value={requirement?.score ?? ""} onChange={(event) => updateLanguageRequirement(draftIndex, criterionIndex, testType, event.target.value)} />
+                              ) : (
+                                <select aria-label={`${LANGUAGE_TEST_LABELS[testType]} 최저 등급`} value={requirement?.level ?? ""} onChange={(event) => updateLanguageRequirement(draftIndex, criterionIndex, testType, event.target.value)}>
+                                  <option value="">기준 없음</option>
+                                  {getLanguageLevels(testType).map((level) => <option key={level} value={level}>{level}</option>)}
+                                </select>
+                              )}
+                            </label>
+                          );
+                        })}
+                      </div>
+                    )}
+                    {(criterion.type === CriterionType.KOREAN_HISTORY || criterion.type === CriterionType.COMPUTER_SKILL) && (
+                      <label className={styles.stackField}><span>최저 등급</span>
+                        <select value={criterion.cutoffScore ?? ""} onChange={(event) => updateCriterion(draftIndex, criterionIndex, { cutoffScore: event.target.value === "" ? null : Number(event.target.value) })}>
+                          <option value="">기준 없음</option>
+                          {(criterion.type === CriterionType.KOREAN_HISTORY ? [3, 2, 1] : [2, 1]).map((grade) => <option key={grade} value={grade}>{grade}급</option>)}
+                        </select>
+                      </label>
+                    )}
+                    {criterion.type === CriterionType.OTHER_CERT && (
+                      <label className={`${styles.stackField} ${styles.wideField}`}><span>인정 자격증</span>
+                        <input placeholder="쉼표로 구분" value={criterion.acceptableCerts.join(", ")} onChange={(event) => updateCriterion(draftIndex, criterionIndex, { acceptableCerts: event.target.value.split(",").map((value) => value.trim()).filter(Boolean) })} />
+                      </label>
+                    )}
                     <button aria-label={`공고 ${draftIndex + 1} 자격 ${criterionIndex + 1} 삭제`} className={styles.removeButton} type="button" onClick={() => updateDraft(draftIndex, { criteria: draft.criteria.filter((_, index) => index !== criterionIndex) })}>삭제</button>
                   </div>
                 ))}

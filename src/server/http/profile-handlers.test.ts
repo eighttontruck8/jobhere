@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   CREDENTIAL_PROFILE_ID,
+  LanguageTestType,
   type CredentialProfile,
 } from "@/domain";
 import type { ProfileServiceContract } from "@/server/services/profile-service";
@@ -9,8 +10,9 @@ import { createProfileHandlers } from "./profile-handlers";
 function createProfile(): CredentialProfile {
   return {
     id: CREDENTIAL_PROFILE_ID,
-    languageScore: 900,
+    languageCredentials: [{ testType: LanguageTestType.TOEIC, score: 900, level: null }],
     koreanHistoryGrade: 2,
+    computerSkillGrade: 1,
     certifications: ["정보처리기사"],
     updatedAt: new Date("2026-09-02T00:00:00.000Z"),
   };
@@ -44,8 +46,9 @@ describe("profile handlers", () => {
         method: "PUT",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          languageScore: 900,
+          languageCredentials: [{ testType: LanguageTestType.TOEIC, score: 900, level: null }],
           koreanHistoryGrade: 2,
+          computerSkillGrade: 1,
           certifications: ["정보처리기사"],
         }),
       }),
@@ -53,8 +56,9 @@ describe("profile handlers", () => {
 
     expect(response.status).toBe(200);
     expect(service.saveProfile).toHaveBeenCalledWith({
-      languageScore: 900,
+      languageCredentials: [{ testType: LanguageTestType.TOEIC, score: 900, level: null }],
       koreanHistoryGrade: 2,
+      computerSkillGrade: 1,
       certifications: ["정보처리기사"],
     });
   });
@@ -67,8 +71,9 @@ describe("profile handlers", () => {
         method: "PUT",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          languageScore: "900",
+          languageCredentials: "900",
           koreanHistoryGrade: 2,
+          computerSkillGrade: 1,
           certifications: [],
         }),
       }),
@@ -82,8 +87,8 @@ describe("profile handlers", () => {
       message: "자격 프로필 입력값을 확인해 주세요.",
       issues: [
         {
-          field: "languageScore",
-          message: "어학 점수는 0~990 범위의 정수여야 합니다.",
+          field: "languageCredentials",
+          message: "시험별 어학 점수 또는 등급을 올바르게 입력해 주세요.",
         },
       ],
     });
@@ -92,8 +97,12 @@ describe("profile handlers", () => {
         method: "PUT",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          languageScore: 991,
+          languageCredentials: [
+            { testType: LanguageTestType.TOEIC, score: 900, level: null },
+            { testType: LanguageTestType.TOEIC, score: 800, level: null },
+          ],
           koreanHistoryGrade: 2,
+          computerSkillGrade: 1,
           certifications: [],
         }),
       }),

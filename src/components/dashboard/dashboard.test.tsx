@@ -43,6 +43,7 @@ const table: EvaluationTable = {
         [CriterionType.LANGUAGE]: {
           type: CriterionType.LANGUAGE,
           requiredFlag: RequiredFlag.REQUIRED,
+          languageRequirements: [],
           cutoffScore: 800,
           acceptableCerts: [],
           displayValue: "800",
@@ -50,13 +51,23 @@ const table: EvaluationTable = {
         [CriterionType.KOREAN_HISTORY]: {
           type: CriterionType.KOREAN_HISTORY,
           requiredFlag: RequiredFlag.OPTIONAL,
+          languageRequirements: [],
           cutoffScore: null,
           acceptableCerts: ["한국사 2급"],
           displayValue: "한국사 2급",
         },
+        [CriterionType.COMPUTER_SKILL]: {
+          type: CriterionType.COMPUTER_SKILL,
+          requiredFlag: null,
+          languageRequirements: [],
+          cutoffScore: null,
+          acceptableCerts: [],
+          displayValue: "기준 정보 없음",
+        },
         [CriterionType.OTHER_CERT]: {
           type: CriterionType.OTHER_CERT,
           requiredFlag: null,
+          languageRequirements: [],
           cutoffScore: null,
           acceptableCerts: [],
           displayValue: "기준 정보 없음",
@@ -96,7 +107,7 @@ describe("Dashboard", () => {
     ).not.toBeNull();
     expect(screen.getAllByText("프론트엔드 개발")).toHaveLength(2);
     expect(screen.getByText("800")).not.toBeNull();
-    expect(screen.getByText("기준 정보 없음")).not.toBeNull();
+    expect(screen.getAllByText("기준 정보 없음")).toHaveLength(2);
   });
 
   it("각 API의 빈 응답을 섹션별 빈 상태로 표시한다", async () => {

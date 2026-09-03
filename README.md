@@ -27,7 +27,7 @@ npm run db:migrate
 ## MVP 화면 경로
 
 - `/dashboard`: 채용 공고 대시보드
-- `/profile`: 단일 자격 프로필
+- `/profile`: TOEIC·OPIc·TOEIC Speaking, 한국사, 컴퓨터활용능력을 포함한 단일 자격 프로필
 - `/postings/add`: 링크·이미지 공고 분석
 - `/postings/review`: 분석 결과 검토·저장
 

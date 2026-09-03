@@ -5,6 +5,7 @@ import {
   EnterpriseType,
   PostingSource,
   RequiredFlag,
+  LanguageTestType,
   type CredentialProfile,
   type JobPosting,
 } from "@/domain";
@@ -15,8 +16,9 @@ import { FitService } from "./fit-service";
 function createProfile(): CredentialProfile {
   return {
     id: CREDENTIAL_PROFILE_ID,
-    languageScore: 900,
+    languageCredentials: [{ testType: LanguageTestType.TOEIC, score: 900, level: null }],
     koreanHistoryGrade: 2,
+    computerSkillGrade: 2,
     certifications: [],
     updatedAt: new Date(0),
   };
@@ -39,6 +41,7 @@ function createPosting(cutoffScore: number | null): JobPosting {
         postingId: "posting-1",
         type: CriterionType.LANGUAGE,
         requiredFlag: RequiredFlag.REQUIRED,
+        languageRequirements: cutoffScore === null ? [] : [{ testType: LanguageTestType.TOEIC, score: cutoffScore, level: null }],
         cutoffScore,
         acceptableCerts: [],
       },

@@ -9,11 +9,16 @@ import {
 } from "react";
 import {
   PROFILE_LIMITS,
+  LANGUAGE_TEST_LABELS,
+  LanguageTestType,
+  getLanguageLevels,
   validateProfile,
   type CredentialProfile,
   type CredentialProfileInput,
   type ProfileValidationField,
   type ValidationIssue,
+  type LanguageRequirement,
+  type LanguageTestType as LanguageTestTypeValue,
 } from "@/domain";
 import styles from "./profile-form.module.css";
 
@@ -65,8 +70,11 @@ export function ProfileForm({ fetcher }: ProfileFormProps) {
   const [loadStatus, setLoadStatus] = useState<LoadStatus>("loading");
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [isNewProfile, setIsNewProfile] = useState(false);
-  const [languageScore, setLanguageScore] = useState("");
+  const [languageCredentials, setLanguageCredentials] = useState<LanguageRequirement[]>([]);
+  const [languageTestType, setLanguageTestType] = useState<LanguageTestTypeValue>(LanguageTestType.TOEIC);
+  const [languageValue, setLanguageValue] = useState("");
   const [koreanHistoryGrade, setKoreanHistoryGrade] = useState("");
+  const [computerSkillGrade, setComputerSkillGrade] = useState("");
   const [certifications, setCertifications] = useState<string[]>([]);
   const [certificationDraft, setCertificationDraft] = useState("");
   const [issues, setIssues] = useState<ValidationIssue[]>([]);
@@ -90,10 +98,11 @@ export function ProfileForm({ fetcher }: ProfileFormProps) {
           setIsNewProfile(true);
           setStatusMessage(body.message || "저장된 자격 정보가 없습니다.");
         } else {
-          setLanguageScore(body.data.languageScore?.toString() ?? "");
+          setLanguageCredentials(body.data.languageCredentials);
           setKoreanHistoryGrade(
             body.data.koreanHistoryGrade?.toString() ?? "",
           );
+          setComputerSkillGrade(body.data.computerSkillGrade?.toString() ?? "");
           setCertifications(body.data.certifications);
           setUpdatedAt(body.data.updatedAt);
         }
@@ -114,6 +123,21 @@ export function ProfileForm({ fetcher }: ProfileFormProps) {
   }, [request]);
 
   const groupedIssues = groupIssues(issues);
+
+  function appendLanguageCredential() {
+    if (!languageValue) return;
+    const credential: LanguageRequirement = languageTestType === LanguageTestType.TOEIC
+      ? { testType: languageTestType, score: Number(languageValue), level: null }
+      : { testType: languageTestType, score: null, level: languageValue };
+
+    setLanguageCredentials((current) => [
+      ...current.filter(({ testType }) => testType !== languageTestType),
+      credential,
+    ]);
+    setLanguageValue("");
+    setIssues((current) => current.filter(({ field }) => field !== "languageCredentials"));
+    setSaveStatus("idle");
+  }
 
   function appendCertification() {
     const value = certificationDraft.trim();
@@ -148,8 +172,9 @@ export function ProfileForm({ fetcher }: ProfileFormProps) {
 
     const pendingCertification = certificationDraft.trim();
     const input: CredentialProfileInput = {
-      languageScore: parseOptionalInteger(languageScore),
+      languageCredentials,
       koreanHistoryGrade: parseOptionalInteger(koreanHistoryGrade),
+      computerSkillGrade: parseOptionalInteger(computerSkillGrade),
       certifications: pendingCertification
         ? [...certifications, pendingCertification]
         : certifications,
@@ -249,62 +274,109 @@ export function ProfileForm({ fetcher }: ProfileFormProps) {
 
           <div className={styles.fieldGrid}>
             <div className={styles.field}>
-              <label htmlFor="language-score">어학 점수</label>
+              <label htmlFor="language-test">어학 시험</label>
+              <select
+                id="language-test"
+                value={languageTestType}
+                onChange={(event) => {
+                  setLanguageTestType(event.target.value as LanguageTestTypeValue);
+                  setLanguageValue("");
+                }}
+              >
+                {Object.values(LanguageTestType).map((type) => (
+                  <option key={type} value={type}>{LANGUAGE_TEST_LABELS[type]}</option>
+                ))}
+              </select>
+              <div className={styles.certificationInput}>
+                {languageTestType === LanguageTestType.TOEIC ? (
+                  <input
+                    aria-label="TOEIC 점수"
+                    inputMode="numeric"
+                    max="990"
+                    min="0"
+                    placeholder="0~990"
+                    type="number"
+                    value={languageValue}
+                    onChange={(event) => setLanguageValue(event.target.value)}
+                  />
+                ) : (
+                  <select
+                    aria-label={`${LANGUAGE_TEST_LABELS[languageTestType]} 등급`}
+                    value={languageValue}
+                    onChange={(event) => setLanguageValue(event.target.value)}
+                  >
+                    <option value="">등급 선택</option>
+                    {getLanguageLevels(languageTestType).map((level) => (
+                      <option key={level} value={level}>{level}</option>
+                    ))}
+                  </select>
+                )}
+                <button type="button" onClick={appendLanguageCredential}>추가</button>
+              </div>
+              <small>같은 시험을 다시 추가하면 기존 값이 변경됩니다.</small>
+              {groupedIssues.languageCredentials?.map((message) => (
+                <small className={styles.fieldError} key={message}>{message}</small>
+              ))}
+              {languageCredentials.length > 0 && (
+                <ul className={styles.certificationList}>
+                  {languageCredentials.map((credential) => (
+                    <li key={credential.testType}>
+                      <span>{LANGUAGE_TEST_LABELS[credential.testType]} {credential.score ?? credential.level}</span>
+                      <button type="button" aria-label={`${LANGUAGE_TEST_LABELS[credential.testType]} 삭제`} onClick={() => setLanguageCredentials((current) => current.filter(({ testType }) => testType !== credential.testType))}>삭제</button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className={styles.field}>
+              <label htmlFor="history-grade">한국사 등급</label>
               <div className={styles.inputWithUnit}>
-                <input
-                  id="language-score"
-                  aria-describedby="language-help language-error"
-                  aria-invalid={Boolean(groupedIssues.languageScore)}
-                  inputMode="numeric"
-                  max={PROFILE_LIMITS.languageScore.max}
-                  min={PROFILE_LIMITS.languageScore.min}
-                  name="languageScore"
-                  placeholder="예: 850"
-                  step="1"
-                  type="number"
-                  value={languageScore}
+                <select
+                  id="history-grade"
+                  aria-describedby="history-help history-error"
+                  aria-invalid={Boolean(groupedIssues.koreanHistoryGrade)}
+                  name="koreanHistoryGrade"
+                  value={koreanHistoryGrade}
                   onChange={(event) => {
-                    setLanguageScore(event.target.value);
+                    setKoreanHistoryGrade(event.target.value);
                     setSaveStatus("idle");
                   }}
-                />
-                <span>점</span>
+                >
+                  <option value="">미보유</option>
+                  <option value="3">3급</option>
+                  <option value="2">2급</option>
+                  <option value="1">1급</option>
+                </select>
               </div>
-              <small id="language-help">0~990 사이의 정수</small>
-              {groupedIssues.languageScore?.map((message) => (
-                <small className={styles.fieldError} id="language-error" key={message}>
+              <small id="history-help">3급, 2급, 1급</small>
+              {groupedIssues.koreanHistoryGrade?.map((message) => (
+                <small className={styles.fieldError} id="history-error" key={message}>
                   {message}
                 </small>
               ))}
             </div>
 
             <div className={styles.field}>
-              <label htmlFor="history-grade">한국사 등급</label>
+              <label htmlFor="computer-skill-grade">컴퓨터활용능력</label>
               <div className={styles.inputWithUnit}>
-                <input
-                  id="history-grade"
-                  aria-describedby="history-help history-error"
-                  aria-invalid={Boolean(groupedIssues.koreanHistoryGrade)}
-                  inputMode="numeric"
-                  max={PROFILE_LIMITS.koreanHistoryGrade.max}
-                  min={PROFILE_LIMITS.koreanHistoryGrade.min}
-                  name="koreanHistoryGrade"
-                  placeholder="예: 2"
-                  step="1"
-                  type="number"
-                  value={koreanHistoryGrade}
+                <select
+                  id="computer-skill-grade"
+                  aria-invalid={Boolean(groupedIssues.computerSkillGrade)}
+                  value={computerSkillGrade}
                   onChange={(event) => {
-                    setKoreanHistoryGrade(event.target.value);
+                    setComputerSkillGrade(event.target.value);
                     setSaveStatus("idle");
                   }}
-                />
-                <span>급</span>
+                >
+                  <option value="">미보유</option>
+                  <option value="2">2급</option>
+                  <option value="1">1급</option>
+                </select>
               </div>
-              <small id="history-help">1~6 사이의 정수</small>
-              {groupedIssues.koreanHistoryGrade?.map((message) => (
-                <small className={styles.fieldError} id="history-error" key={message}>
-                  {message}
-                </small>
+              <small>2급, 1급</small>
+              {groupedIssues.computerSkillGrade?.map((message) => (
+                <small className={styles.fieldError} key={message}>{message}</small>
               ))}
             </div>
           </div>

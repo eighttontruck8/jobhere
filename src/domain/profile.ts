@@ -1,8 +1,11 @@
+import type { LanguageRequirement } from "./language";
+
 export const CREDENTIAL_PROFILE_ID = "singleton" as const;
 
 export interface CredentialProfileInput {
-  languageScore: number | null;
+  languageCredentials: LanguageRequirement[];
   koreanHistoryGrade: number | null;
+  computerSkillGrade: number | null;
   certifications: string[];
 }
 
@@ -12,8 +15,9 @@ export interface CredentialProfile extends CredentialProfileInput {
 }
 
 export type ProfileValidationField =
-  | "languageScore"
+  | "languageCredentials"
   | "koreanHistoryGrade"
+  | "computerSkillGrade"
   | "certifications";
 
 export interface ValidationIssue {

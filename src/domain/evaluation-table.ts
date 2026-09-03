@@ -1,8 +1,8 @@
 import {
   CriterionType,
   EnterpriseType,
-  RequiredFlag,
 } from "./constants";
+import { formatLanguageRequirement } from "./language";
 import type {
   AddResult,
   EvaluationCriterion,
@@ -29,28 +29,46 @@ function createCriterionCell(
     return {
       type,
       requiredFlag: null,
+      languageRequirements: [],
       cutoffScore: null,
       acceptableCerts: [],
       displayValue: EVALUATION_TABLE_PLACEHOLDERS.criterion,
     };
   }
 
-  if (criterion.requiredFlag === RequiredFlag.REQUIRED) {
+  if (criterion.type === CriterionType.LANGUAGE) {
     return {
       type,
       requiredFlag: criterion.requiredFlag,
+      languageRequirements: criterion.languageRequirements.map((item) => ({ ...item })),
       cutoffScore: criterion.cutoffScore,
       acceptableCerts: [...criterion.acceptableCerts],
-      displayValue:
-        criterion.cutoffScore === null
-          ? EVALUATION_TABLE_PLACEHOLDERS.cutoff
-          : String(criterion.cutoffScore),
+      displayValue: criterion.languageRequirements.length === 0
+        ? EVALUATION_TABLE_PLACEHOLDERS.cutoff
+        : criterion.languageRequirements.map(formatLanguageRequirement).join(" / "),
+    };
+  }
+
+  if (
+    criterion.type === CriterionType.KOREAN_HISTORY ||
+    criterion.type === CriterionType.COMPUTER_SKILL
+  ) {
+    return {
+      type,
+      requiredFlag: criterion.requiredFlag,
+      languageRequirements: [],
+      cutoffScore: criterion.cutoffScore,
+      acceptableCerts: [...criterion.acceptableCerts],
+      displayValue: criterion.cutoffScore === null
+        ? EVALUATION_TABLE_PLACEHOLDERS.cutoff
+        : `${criterion.cutoffScore}급`,
     };
   }
 
   return {
     type,
     requiredFlag: criterion.requiredFlag,
+    languageRequirements: [],
     cutoffScore: criterion.cutoffScore,
     acceptableCerts: [...criterion.acceptableCerts],
     displayValue:
@@ -80,6 +98,10 @@ export function toEvaluationTableRow(
       [CriterionType.KOREAN_HISTORY]: createCriterionCell(
         CriterionType.KOREAN_HISTORY,
         criteriaByType.get(CriterionType.KOREAN_HISTORY),
+      ),
+      [CriterionType.COMPUTER_SKILL]: createCriterionCell(
+        CriterionType.COMPUTER_SKILL,
+        criteriaByType.get(CriterionType.COMPUTER_SKILL),
       ),
       [CriterionType.OTHER_CERT]: createCriterionCell(
         CriterionType.OTHER_CERT,

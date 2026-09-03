@@ -20,6 +20,7 @@ enum PostingSource {
 enum CriterionType {
   LANGUAGE
   KOREAN_HISTORY
+  COMPUTER_SKILL
   OTHER_CERT
 }
 
@@ -51,6 +52,7 @@ model EvaluationCriterion {
   posting         JobPosting    @relation(fields: [postingId], references: [id], onDelete: Cascade)
   type            CriterionType
   requiredFlag    RequiredFlag
+  languageRequirements Json       @default("[]")
   cutoffScore     Int?
   acceptableCerts String[]      @default([])
 
@@ -60,8 +62,9 @@ model EvaluationCriterion {
 
 model CredentialProfile {
   id                  String   @id @default("singleton")
-  languageScore       Int?
+  languageCredentials Json     @default("[]")
   koreanHistoryGrade  Int?
+  computerSkillGrade  Int?
   certifications      String[] @default([])
   updatedAt           DateTime @updatedAt
 }
