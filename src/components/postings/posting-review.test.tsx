@@ -82,7 +82,12 @@ describe("PostingReview", () => {
 
   it("저장 실패 시 수정 내용과 임시 공고를 유지한다", async () => {
     writeReviewDrafts(sessionStorage, [draft()]);
-    const fetcher = vi.fn(async () => jsonResponse({ error: "저장 서버 오류" }, 500));
+    const fetcher = vi.fn(async () => jsonResponse({
+      error: "데이터베이스 구조가 현재 앱과 맞지 않습니다.",
+      detail: "npx prisma migrate dev를 실행해 주세요.",
+      code: "DATABASE_SCHEMA_OUTDATED",
+      requestId: "error-123",
+    }, 500));
     render(<PostingReview fetcher={fetcher} />);
     const company = await screen.findByLabelText(/회사명/);
     fireEvent.change(company, { target: { value: "보존 회사" } });
@@ -90,7 +95,9 @@ describe("PostingReview", () => {
 
     const alert = await screen.findByRole("alert");
     expect(alert.textContent).toContain("저장에 실패했습니다");
-    expect(alert.textContent).toContain("저장 서버 오류");
+    expect(alert.textContent).toContain("데이터베이스 구조가 현재 앱과 맞지 않습니다.");
+    expect(alert.textContent).toContain("npx prisma migrate dev");
+    expect(alert.textContent).toContain("오류 ID: error-123");
     expect((company as HTMLInputElement).value).toBe("보존 회사");
     expect(readReviewDrafts(sessionStorage)[0].company).toBe("보존 회사");
   });

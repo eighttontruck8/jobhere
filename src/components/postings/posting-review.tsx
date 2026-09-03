@@ -25,7 +25,13 @@ import styles from "./posting-flow.module.css";
 
 type Fetcher = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 interface PostingReviewProps { fetcher?: Fetcher }
-interface SaveResponse { error?: string; fields?: string[] }
+interface SaveResponse {
+  error?: string;
+  detail?: string;
+  code?: string;
+  requestId?: string;
+  fields?: string[];
+}
 interface Notice {
   kind: "success" | "error";
   title: string;
@@ -130,7 +136,12 @@ export function PostingReview({ fetcher }: PostingReviewProps) {
       const body = await readSaveResponse(response);
       if (!response.ok) {
         setErrors((current) => ({ ...current, [index]: body.fields ?? [] }));
-        throw new Error(body.error || "공고를 저장하지 못했습니다.");
+        const message = [
+          body.error || "공고를 저장하지 못했습니다.",
+          body.detail,
+          body.requestId ? `오류 ID: ${body.requestId}` : null,
+        ].filter(Boolean).join("\n");
+        throw new Error(message);
       }
 
       const remaining = drafts.filter((_, itemIndex) => itemIndex !== index);

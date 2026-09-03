@@ -104,6 +104,7 @@
 3. IF 사용자가 필수 필드(기업명, 직무명, 마감 기한)를 비운 채로 저장을 시도하면, THEN THE System SHALL 저장을 거부하고 누락된 필드를 알리는 오류 메시지를 표시한다.
 4. WHEN 사용자가 Review_Screen에서 저장을 확정하면, THE System SHALL 검토된 Job_Posting을 데이터베이스에 저장하고 저장 성공을 사용자에게 알린다.
 5. IF 데이터베이스 저장에 실패하면, THEN THE System SHALL 저장 실패를 알리는 오류 메시지를 표시하고 검토 중이던 데이터를 유지한다.
+5-1. WHERE 저장 실패가 데이터베이스 연결·스키마·클라이언트 문제로 식별되면, THE System SHALL 안전한 원인별 해결 안내와 로그 추적용 오류 ID를 표시한다.
 6. WHEN 사용자가 Review_Screen에서 저장을 취소하면, THE System SHALL 추출된 데이터를 저장하지 않고 폐기한다.
 7. THE Review_Screen SHALL 모집인원·상세 내용·원본 URL을 편집 가능한 필드로 표시하고 저장 대상 데이터에 포함한다.
 

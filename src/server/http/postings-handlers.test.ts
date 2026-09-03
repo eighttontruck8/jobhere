@@ -147,6 +147,7 @@ describe("postings handlers", () => {
   });
 
   it("preserves the HTTP contract when persistence fails", async () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => undefined);
     const service = createService();
     vi.mocked(service.savePosting).mockRejectedValueOnce(
       new Error("database unavailable"),
@@ -166,9 +167,80 @@ describe("postings handlers", () => {
     );
 
     expect(response.status).toBe(500);
-    await expect(response.json()).resolves.toEqual({
-      error: "공고를 저장하지 못했습니다.",
+    await expect(response.json()).resolves.toMatchObject({
+      error: "공고 저장 중 서버 오류가 발생했습니다.",
+      detail: "아래 오류 ID를 서버 로그에서 확인해 주세요.",
+      code: "POSTING_SAVE_FAILED",
+      requestId: expect.any(String),
     });
+    expect(log).toHaveBeenCalledWith(
+      "[postings.save]",
+      expect.objectContaining({ requestId: expect.any(String) }),
+    );
+    log.mockRestore();
+  });
+
+  it.each([
+    {
+      prismaCode: "P1001",
+      status: 503,
+      code: "DATABASE_UNAVAILABLE",
+      error: "데이터베이스에 연결할 수 없습니다.",
+    },
+    {
+      prismaCode: "P2022",
+      status: 500,
+      code: "DATABASE_SCHEMA_OUTDATED",
+      error: "데이터베이스 구조가 현재 앱과 맞지 않습니다.",
+    },
+  ])("returns actionable details for $prismaCode", async ({ prismaCode, status, code, error }) => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const service = createService();
+    vi.mocked(service.savePosting).mockRejectedValueOnce({ code: prismaCode });
+    const response = await createPostingsHandlers(service).POST(
+      new Request("http://localhost/api/postings", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          enterpriseType: EnterpriseType.PRIVATE,
+          company: "테스트 기업",
+          jobRole: "개발",
+          title: "공고",
+          deadline: "2026-09-30T14:59:59.000Z",
+        }),
+      }),
+    );
+
+    expect(response.status).toBe(status);
+    await expect(response.json()).resolves.toMatchObject({ code, error });
+    log.mockRestore();
+  });
+
+  it("Prisma Client 불일치를 재생성 안내로 반환한다", async () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const service = createService();
+    vi.mocked(service.savePosting).mockRejectedValueOnce({
+      name: "PrismaClientValidationError",
+    });
+    const response = await createPostingsHandlers(service).POST(
+      new Request("http://localhost/api/postings", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          enterpriseType: EnterpriseType.PRIVATE,
+          company: "테스트 기업",
+          jobRole: "개발",
+          title: "공고",
+          deadline: "2026-09-30T14:59:59.000Z",
+        }),
+      }),
+    );
+
+    await expect(response.json()).resolves.toMatchObject({
+      code: "PRISMA_CLIENT_OUTDATED",
+      detail: expect.stringContaining("npx prisma generate"),
+    });
+    log.mockRestore();
   });
 
   it("builds a filtered public evaluation table response", async () => {
