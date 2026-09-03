@@ -8,6 +8,7 @@ import {
   RequiredFlag,
   formatDeadline,
   formatLanguageRequirement,
+  parsePostingDetails,
   type EvaluationCriterion,
 } from "@/domain";
 import { postingService } from "@/server/container";
@@ -49,6 +50,7 @@ export default async function PostingDetailPage({ params }: { params: Promise<{ 
   const { id } = await params;
   const posting = await postingService.getPosting(id);
   if (!posting) notFound();
+  const detailSections = posting.details ? parsePostingDetails(posting.details) : [];
 
   return (
     <article className={styles.page}>
@@ -77,9 +79,22 @@ export default async function PostingDetailPage({ params }: { params: Promise<{ 
       <section className={styles.contentSection}>
         <p className={styles.kicker}>DETAILS</p>
         <h2>공고 상세 내용</h2>
-        <div className={styles.details}>
-          {posting.details || "추출된 상세 내용이 없습니다. 원본 공고에서 내용을 확인해 주세요."}
-        </div>
+        {detailSections.length === 0 ? (
+          <p className={styles.empty}>추출된 상세 내용이 없습니다. 원본 공고에서 내용을 확인해 주세요.</p>
+        ) : (
+          <div className={styles.details}>
+            {detailSections.map((section) => (
+              <section className={styles.detailSection} key={section.title}>
+                <h3>[{section.title}]</h3>
+                <ul>
+                  {section.items.map((item, index) => (
+                    <li className={section.title === "전형순서" ? styles.process : undefined} key={`${item}-${index}`}>{item}</li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className={styles.contentSection}>

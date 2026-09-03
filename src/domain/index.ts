@@ -8,3 +8,4 @@ export * from "./language";
 export * from "./profile";
 export * from "./profile-validation";
 export * from "./posting-draft-validation";
+export * from "./posting-details";

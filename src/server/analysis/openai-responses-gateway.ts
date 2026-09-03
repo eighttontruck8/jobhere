@@ -7,7 +7,24 @@ enterpriseType은 PUBLIC 또는 PRIVATE, criterion type은 LANGUAGE, KOREAN_HIST
 requiredFlag는 REQUIRED 또는 OPTIONAL만 사용하세요. 알 수 없는 nullable 필드는 null,
 평가 기준을 찾지 못하면 criteria는 빈 배열로 반환하세요. 원문에 여러 직무가 있으면 각각 분리하세요.
 recruitmentCount에는 모집 인원을 원문 표현대로 간결하게 넣고(예: "3명", "00명"), 없으면 null로 반환하세요.
-details에는 담당 업무, 지원 자격, 우대 사항, 전형 절차 등 공고의 핵심 내용을 한국어로 읽기 쉽게 요약하고, 없으면 null로 반환하세요.
+details는 긴 문단으로 쓰지 말고 반드시 아래 형식의 한국어 개조식 텍스트로 반환하세요.
+[직무]
+- 직무명과 직급을 한 문장씩 작성
+- 담당 업무를 한 문장씩 작성
+[근무지]
+- 근무 지역 또는 장소
+[임용예정일자]
+- YYYY년 M월 D일 또는 미정
+[전형순서]
+- 서류전형 (날짜: YYYY년 M월 D일 또는 미정, 장소: 장소명·비대면·추후 공지) -> 다음 전형도 같은 형식
+[지원자격]
+- 자격별 한 문장
+[우대사항]
+- 우대사항별 한 문장
+[유의사항]
+- 유의사항별 한 문장
+각 제목과 항목은 줄바꿈하고 모든 항목은 '- '로 시작하세요. 공고에 없는 날짜는 '미정', 장소는 '추후 공지'로 표시하세요.
+온라인·화상 등 비대면 전형이면 장소를 '비대면'으로 표시하세요. 마감일을 다른 일정 날짜로 사용하거나 원문에 없는 내용을 추측하지 마세요.
 LANGUAGE의 languageRequirements에는 공고가 인정하는 TOEIC, OPIc, TOEIC Speaking 기준을 각각 넣으세요.
 testType은 TOEIC, OPIC, TOEIC_SPEAKING 중 하나입니다. TOEIC은 score(0~990)를 사용하고 level은 null로,
 OPIc은 IL, IM1, IM2, IM3, IH, AL 중 level을 사용하고 score는 null로,
