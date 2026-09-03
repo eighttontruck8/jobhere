@@ -182,7 +182,7 @@ export class OpenAiResponsesGateway implements LlmExtractionGateway {
 
     this.endpoint = `${(options.baseUrl ?? "https://api.openai.com/v1").replace(/\/$/, "")}/responses`;
     this.fetcher = options.fetcher ?? globalThis.fetch;
-    this.timeoutMilliseconds = options.timeoutMilliseconds ?? 25_000;
+    this.timeoutMilliseconds = options.timeoutMilliseconds ?? 60_000;
   }
 
   async generateStructuredPostings(content: RawContent): Promise<unknown> {
