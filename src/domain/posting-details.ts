@@ -5,6 +5,25 @@ export interface PostingDetailSection {
 
 const SECTION_PATTERN = /^\[([^\]]+)\]$/;
 const BULLET_PATTERN = /^[-*]\s*/;
+const SECTION_TITLE_ALIASES: Record<string, string> = {
+  직무내용: "직무",
+  직무설명: "직무",
+  담당업무: "직무",
+  주요업무: "직무",
+  근무장소: "근무지",
+  근무지역: "근무지",
+  임용일: "임용예정일자",
+  임용예정일: "임용예정일자",
+  입사일: "임용예정일자",
+  입사예정일: "임용예정일자",
+  전형절차: "전형순서",
+  채용절차: "전형순서",
+  채용과정: "전형순서",
+  응시자격: "지원자격",
+  자격요건: "지원자격",
+  우대조건: "우대사항",
+  주의사항: "유의사항",
+};
 const SECTION_ORDER = [
   "직무",
   "근무지",
@@ -67,8 +86,13 @@ export function parsePostingDetails(details: string): PostingDetailSection[] {
   for (const line of lines) {
     const heading = SECTION_PATTERN.exec(line);
     if (heading) {
-      current = { title: heading[1].trim(), items: [] };
-      sections.push(current);
+      const rawTitle = heading[1].replace(/\s+/g, "").trim();
+      const title = SECTION_TITLE_ALIASES[rawTitle] ?? rawTitle;
+      current = sections.find((section) => section.title === title) ?? null;
+      if (!current) {
+        current = { title, items: [] };
+        sections.push(current);
+      }
       continue;
     }
 
