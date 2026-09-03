@@ -178,7 +178,7 @@ property test는 최소 100회 반복하며, 각 property test는 다음 태그 
     - _Requirements: 7.5, 7.6_
 
 - [ ] 9. Analysis_Engine 오케스트레이션 구현
-  - [ ] 9.1 SourceParser 인터페이스 및 LinkParser / ImageParser 구현
+  - [x] 9.1 SourceParser 인터페이스 및 LinkParser / ImageParser 구현
     - LinkParser: URL fetch → 본문 텍스트, 접근 불가 시 SourceAccessError(R4.7)
     - ImageParser: 형식·크기 검증(6.3 재사용) 후 비전 LLM/OCR 페이로드 준비
     - _Requirements: 4.1, 4.2, 4.7, 4.8_

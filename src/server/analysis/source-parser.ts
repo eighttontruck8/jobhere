@@ -34,8 +34,9 @@ export interface TextRawContent {
 
 export interface ImageRawContent {
   kind: "image";
-  mimeType: string;
+  mimeType: "image/jpeg" | "image/png";
   data: Uint8Array;
+  dataUrl: string;
 }
 
 export type RawContent = TextRawContent | ImageRawContent;
