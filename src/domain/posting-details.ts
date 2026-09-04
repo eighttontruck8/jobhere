@@ -85,13 +85,13 @@ function normalizeProcessStage(value: string): string | null {
     const name = normalizeStageName(metadata[1]);
     const date = normalizeScheduleDate(metadata[2]);
     const location = normalizeLocation(metadata[3]);
-    return `${name}${date ? ` ${date}` : ""}${location ? ` / ${location}` : ""}`;
+    return `${name}${date ? ` ${date}` : ""}${location ? `|${location}` : ""}`;
   }
 
   return normalizeScheduleDate(stage)
     .replace(/\s*\/?\s*장소\s*:\s*([^,]+)/g, (_, location: string) => {
       const normalized = normalizeLocation(location);
-      return normalized ? ` / ${normalized}` : "";
+      return normalized ? `|${normalized}` : "";
     })
     .trim();
 }

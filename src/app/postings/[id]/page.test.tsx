@@ -57,8 +57,8 @@ describe("PostingDetailPage", () => {
     expect(screen.getByText(/전산 시스템 개발 및 운영/)).not.toBeNull();
     expect(screen.getByRole("heading", { name: "[직무]" })).not.toBeNull();
     expect(screen.getByRole("heading", { name: "[근무지]" })).not.toBeNull();
-    expect(screen.getByText("서류 9/1(화)-9/15(화) / 💻비대면")).not.toBeNull();
-    expect(screen.getByText("1차면접 10/20(화) / 📍대구")).not.toBeNull();
+    expect(screen.getByText("서류 9/1(화)-9/15(화)|💻비대면")).not.toBeNull();
+    expect(screen.getByText("1차면접 10/20(화)|📍대구")).not.toBeNull();
     expect(screen.queryByText(/이의제기|검증/)).toBeNull();
     expect(screen.getByText("1️⃣")).not.toBeNull();
     expect(screen.getByText("2️⃣")).not.toBeNull();
