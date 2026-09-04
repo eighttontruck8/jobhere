@@ -84,6 +84,7 @@
 
 1. WHEN 사용자가 웹 또는 카페 링크를 입력하고 분석을 요청하면, THE Analysis_Engine SHALL 30초 이내에 해당 소스로부터 구조화된 Job_Posting 정보를 추출한다.
 2. WHEN 사용자가 지원 형식(JPEG, PNG)이며 크기가 10MB 이하인 스크린샷 이미지를 제출하고 분석을 요청하면, THE Analysis_Engine SHALL 30초 이내에 비전 지원 LLM 또는 OCR을 사용하여 구조화된 Job_Posting 정보를 추출한다.
+2-1. WHEN 사용자가 클립보드에 복사된 지원 형식의 스크린샷 이미지를 붙여넣으면, THE System SHALL 사용자가 이미지 파일을 별도로 저장하지 않아도 해당 이미지를 분석 입력으로 첨부한다.
 3. WHERE 소스에 복수의 직무가 포함된 경우, THE Analysis_Engine SHALL 발견된 각 직무를 개별 Job_Posting 항목으로 최대 50개까지 추출한다.
 4. WHERE Role_Filter가 설정된 경우, THE Analysis_Engine SHALL Role_Filter에 일치하는 직무만 추출한다.
 5. WHERE Role_Filter가 설정되지 않은 경우, THE Analysis_Engine SHALL 소스에서 발견된 모든 직무를 추출한다.

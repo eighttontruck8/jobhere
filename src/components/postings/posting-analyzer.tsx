@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { type FormEvent, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { writeReviewDrafts, type SerializedPostingDraft } from "./posting-flow";
 import styles from "./posting-flow.module.css";
 
@@ -10,6 +10,22 @@ interface PostingAnalyzerProps { fetcher?: Fetcher }
 interface AnalysisResponse { data?: SerializedPostingDraft[]; error?: string }
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+const SUPPORTED_IMAGE_TYPES = ["image/jpeg", "image/png"];
+
+function validateImage(image: File): string | null {
+  if (!SUPPORTED_IMAGE_TYPES.includes(image.type) || image.size === 0 || image.size > MAX_IMAGE_BYTES) {
+    return "JPEG 또는 PNG 형식의 10MB 이하 이미지를 선택해 주세요.";
+  }
+  return null;
+}
+
+function nameClipboardImage(image: File): File {
+  const extension = image.type === "image/jpeg" ? "jpg" : "png";
+  return new File([image], `클립보드-이미지.${extension}`, {
+    type: image.type,
+    lastModified: Date.now(),
+  });
+}
 
 export function PostingAnalyzer({ fetcher }: PostingAnalyzerProps) {
   const router = useRouter();
@@ -20,6 +36,38 @@ export function PostingAnalyzer({ fetcher }: PostingAnalyzerProps) {
   const [roleFilter, setRoleFilter] = useState("");
   const [status, setStatus] = useState<"idle" | "analyzing" | "error">("idle");
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    function handleClipboardPaste(event: ClipboardEvent) {
+      const imageItem = Array.from(event.clipboardData?.items ?? [])
+        .find((item) => item.kind === "file" && item.type.startsWith("image/"));
+      if (!imageItem) return;
+
+      event.preventDefault();
+      setMode("image");
+      const pastedImage = imageItem.getAsFile();
+      if (!pastedImage) {
+        setStatus("error");
+        setMessage("클립보드에서 이미지를 불러오지 못했습니다. 다시 복사해 주세요.");
+        return;
+      }
+
+      const validationMessage = validateImage(pastedImage);
+      if (validationMessage) {
+        setImage(null);
+        setStatus("error");
+        setMessage(validationMessage);
+        return;
+      }
+
+      setImage(nameClipboardImage(pastedImage));
+      setStatus("idle");
+      setMessage("");
+    }
+
+    globalThis.addEventListener("paste", handleClipboardPaste);
+    return () => globalThis.removeEventListener("paste", handleClipboardPaste);
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -33,11 +81,13 @@ export function PostingAnalyzer({ fetcher }: PostingAnalyzerProps) {
       setMessage("분석할 채용 공고 이미지를 선택해 주세요.");
       return;
     }
-    if (mode === "image" && image &&
-      (!["image/jpeg", "image/png"].includes(image.type) || image.size === 0 || image.size > MAX_IMAGE_BYTES)) {
-      setStatus("error");
-      setMessage("JPEG 또는 PNG 형식의 10MB 이하 이미지를 선택해 주세요.");
-      return;
+    if (mode === "image" && image) {
+      const validationMessage = validateImage(image);
+      if (validationMessage) {
+        setStatus("error");
+        setMessage(validationMessage);
+        return;
+      }
     }
 
     setStatus("analyzing");
@@ -95,8 +145,8 @@ export function PostingAnalyzer({ fetcher }: PostingAnalyzerProps) {
           ) : (
             <label className={styles.uploadBox}>
               <span className={styles.uploadIcon} aria-hidden="true">＋</span>
-              <strong>{image ? image.name : "채용 공고 스크린샷 선택"}</strong>
-              <small>{image ? `${(image.size / 1024 / 1024).toFixed(2)}MB` : "JPEG 또는 PNG · 최대 10MB"}</small>
+              <strong aria-live="polite">{image ? image.name : "파일을 선택하거나 스크린샷 붙여넣기"}</strong>
+              <small>{image ? `${(image.size / 1024 / 1024).toFixed(2)}MB` : "Ctrl+V로 붙여넣기 · JPEG 또는 PNG · 최대 10MB"}</small>
               <input accept="image/jpeg,image/png" aria-label="채용 공고 이미지" type="file"
                 onChange={(event) => { setImage(event.target.files?.[0] ?? null); setStatus("idle"); }} />
             </label>

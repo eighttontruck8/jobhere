@@ -83,4 +83,54 @@ describe("PostingAnalyzer", () => {
     expect(screen.getByRole("alert").textContent).toContain("JPEG 또는 PNG");
     expect(fetcher).not.toHaveBeenCalled();
   });
+
+  it("클립보드의 스크린샷을 파일 저장 없이 이미지 분석에 사용한다", async () => {
+    const fetcher = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      void input;
+      void init;
+      return jsonResponse({ data: [analyzedDraft] });
+    });
+    render(<PostingAnalyzer fetcher={fetcher} />);
+    const clipboardImage = new File(["screenshot"], "image.png", { type: "image/png" });
+
+    fireEvent.paste(window, {
+      clipboardData: {
+        items: [{
+          kind: "file",
+          type: "image/png",
+          getAsFile: () => clipboardImage,
+        }],
+      },
+    });
+
+    expect(screen.getByRole("tab", { name: "이미지로 분석" }).getAttribute("aria-selected")).toBe("true");
+    expect(screen.getByText("클립보드-이미지.png")).not.toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "분석 시작" }));
+
+    await waitFor(() => expect(fetcher).toHaveBeenCalledOnce());
+    const [, init] = fetcher.mock.calls[0];
+    const image = (init?.body as FormData).get("image") as File;
+    expect(image.name).toBe("클립보드-이미지.png");
+    expect(image.type).toBe("image/png");
+    expect(push).toHaveBeenCalledWith("/postings/review");
+  });
+
+  it("지원하지 않는 클립보드 이미지는 즉시 안내한다", () => {
+    const fetcher = vi.fn();
+    render(<PostingAnalyzer fetcher={fetcher} />);
+
+    fireEvent.paste(window, {
+      clipboardData: {
+        items: [{
+          kind: "file",
+          type: "image/gif",
+          getAsFile: () => new File(["image"], "image.gif", { type: "image/gif" }),
+        }],
+      },
+    });
+
+    expect(screen.getByRole("alert").textContent).toContain("JPEG 또는 PNG");
+    expect(screen.getByRole("tab", { name: "이미지로 분석" }).getAttribute("aria-selected")).toBe("true");
+    expect(fetcher).not.toHaveBeenCalled();
+  });
 });
