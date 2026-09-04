@@ -37,9 +37,11 @@ describe("AnalysisEngine", () => {
     };
     const imageContent: RawContent = {
       kind: "image",
-      mimeType: "image/png",
-      data: new Uint8Array([1]),
-      dataUrl: "data:image/png;base64,AQ==",
+      images: [{
+        mimeType: "image/png",
+        data: new Uint8Array([1]),
+        dataUrl: "data:image/png;base64,AQ==",
+      }],
     };
     const linkParser = parserFor("link", linkContent);
     const imageParser = parserFor("image", imageContent);

@@ -21,6 +21,13 @@
 .uploadBox input { max-width: 260px; }
 .uploadBox small { color: var(--muted); }
 .uploadIcon { display: grid; width: 46px; height: 46px; place-items: center; border-radius: 50%; color: var(--primary); background: #e8edff; font-size: 1.5rem; }
+.imageInput { display: grid; gap: 12px; }
+.imageQueue { display: grid; gap: 8px; padding: 0; list-style: none; }
+.imageQueue li { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 14px; border: 1px solid #dbe5ff; border-radius: 10px; background: #f8faff; }
+.imageQueue li > span { display: flex; min-width: 0; align-items: center; gap: 10px; }
+.imageQueue li strong { overflow: hidden; color: #334155; font-size: .84rem; text-overflow: ellipsis; white-space: nowrap; }
+.imageQueue li small { flex: none; color: var(--muted); font-size: .75rem; }
+.imageQueue button { flex: none; padding: 6px 9px; border: 1px solid #fecaca; border-radius: 8px; color: #b91c1c; background: #fff; font-size: .76rem; font-weight: 700; cursor: pointer; }
 .primaryButton, .secondaryButton, .removeButton { border-radius: 10px; font-weight: 750; cursor: pointer; }
 .primaryButton { min-height: 46px; padding: 11px 22px; border: 1px solid var(--primary); color: #fff; background: var(--primary); font-size: .95rem; }
 .primaryButton:disabled { opacity: .58; cursor: wait; }

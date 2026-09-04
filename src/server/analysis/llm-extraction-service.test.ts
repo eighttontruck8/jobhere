@@ -87,4 +87,54 @@ describe("LlmExtractionService", () => {
       expect(error).toMatchObject({ reason: "GATEWAY_ERROR", cause });
     }
   });
+
+  it("링크에서 가져온 이미지 분석 결과에도 원본 URL을 보존한다", async () => {
+    const service = new LlmExtractionService({
+      generateStructuredPostings: async () => ({
+        postings: [{
+          enterpriseType: EnterpriseType.PUBLIC,
+          company: "한국공사",
+          jobRole: "행정",
+          title: "신입 채용",
+          deadline: null,
+          jobCategory: null,
+          recruitmentCount: null,
+          details: null,
+          criteria: [],
+        }],
+      }),
+    });
+
+    const [result] = await service.extract({
+      kind: "image",
+      images: [{ mimeType: "image/png", data: new Uint8Array([1]), dataUrl: "data:image/png;base64,AQ==" }],
+      sourceUrl: "https://example.com/image-posting",
+    });
+
+    expect(result.originalUrl).toBe("https://example.com/image-posting");
+  });
+
+  it("연도가 생략된 한국식 마감 일시를 현재 연도로 보정한다", async () => {
+    const service = new LlmExtractionService({
+      generateStructuredPostings: async () => ({
+        postings: [{
+          enterpriseType: EnterpriseType.PRIVATE,
+          company: "KT",
+          jobRole: "네트워크",
+          title: "대졸 신입 채용",
+          deadline: "9/7(월) 16시",
+          jobCategory: null,
+          recruitmentCount: null,
+          details: null,
+          criteria: [],
+        }],
+      }),
+    });
+
+    const [result] = await service.extract(content);
+
+    expect(result.deadline?.getFullYear()).toBe(new Date().getFullYear());
+    expect(result.deadline?.getMonth()).toBe(8);
+    expect(result.deadline?.getDate()).toBe(7);
+  });
 });

@@ -28,6 +28,18 @@ function parseNullableString(value: unknown): string | null {
 function parseDeadline(value: unknown): Date | null {
   if (value === null || value === undefined) return null;
 
+  if (typeof value === "string") {
+    const shortKoreanDate = /^(\d{1,2})[/.](\d{1,2})(?:\([일월화수목금토]\))?(?:\s*(\d{1,2})시)?$/.exec(value.trim());
+    if (shortKoreanDate) {
+      const [, month, day, hour = "23"] = shortKoreanDate;
+      const year = new Date().getFullYear();
+      const normalized = new Date(
+        `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}T${hour.padStart(2, "0")}:00:00+09:00`,
+      );
+      if (!Number.isNaN(normalized.getTime())) return normalized;
+    }
+  }
+
   const date = value instanceof Date
     ? new Date(value.getTime())
     : typeof value === "string"

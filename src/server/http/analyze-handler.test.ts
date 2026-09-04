@@ -94,10 +94,16 @@ describe("createAnalyzeHandler", () => {
     }));
     const engine: AnalysisEngineContract = { analyze };
     const form = new FormData();
-    form.set(
-      "image",
+    form.append(
+      "images",
       new File([new Uint8Array([1, 2, 3])], "posting.png", {
         type: "image/png",
+      }),
+    );
+    form.append(
+      "images",
+      new File([new Uint8Array([4, 5])], "posting-2.jpg", {
+        type: "image/jpeg",
       }),
     );
     form.set("roleFilter", "백엔드");
@@ -114,9 +120,10 @@ describe("createAnalyzeHandler", () => {
     expect(engine.analyze).toHaveBeenCalledWith(
       {
         kind: "image",
-        mimeType: "image/png",
-        sizeBytes: 3,
-        data: new Uint8Array([1, 2, 3]),
+        images: [
+          { mimeType: "image/png", sizeBytes: 3, data: new Uint8Array([1, 2, 3]) },
+          { mimeType: "image/jpeg", sizeBytes: 2, data: new Uint8Array([4, 5]) },
+        ],
       },
       "백엔드",
     );

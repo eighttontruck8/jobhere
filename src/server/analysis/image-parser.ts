@@ -1,7 +1,7 @@
 import { Buffer } from "node:buffer";
 import {
   UnsupportedImageError,
-  validateImageMetadata,
+  validateImageCollectionMetadata,
   type SupportedImageMimeType,
 } from "./image-validation";
 import type {
@@ -16,7 +16,7 @@ export type ImageDataUrlEncoder = (
   mimeType: SupportedImageMimeType,
 ) => string;
 
-function encodeImageDataUrl(
+export function encodeImageDataUrl(
   data: Uint8Array,
   mimeType: SupportedImageMimeType,
 ): string {
@@ -37,22 +37,23 @@ export class ImageParser implements SourceParser {
       throw new TypeError("ImageParser는 이미지 소스만 처리할 수 있습니다.");
     }
 
-    const metadata = validateImageMetadata(input.mimeType, input.sizeBytes);
+    const metadata = validateImageCollectionMetadata(input.images);
+    const images = input.images.map((image, index) => {
+      if (image.data.byteLength !== metadata[index].sizeBytes) {
+        throw new UnsupportedImageError(
+          "SIZE_MISMATCH",
+          "이미지 크기 정보와 실제 파일 크기가 일치하지 않습니다.",
+        );
+      }
 
-    if (input.data.byteLength !== metadata.sizeBytes) {
-      throw new UnsupportedImageError(
-        "SIZE_MISMATCH",
-        "이미지 크기 정보와 실제 파일 크기가 일치하지 않습니다.",
-      );
-    }
+      const data = new Uint8Array(image.data);
+      return {
+        mimeType: metadata[index].mimeType,
+        data,
+        dataUrl: this.encodeDataUrl(data, metadata[index].mimeType),
+      };
+    });
 
-    const data = new Uint8Array(input.data);
-
-    return {
-      kind: "image",
-      mimeType: metadata.mimeType,
-      data,
-      dataUrl: this.encodeDataUrl(data, metadata.mimeType),
-    };
+    return { kind: "image", images };
   }
 }

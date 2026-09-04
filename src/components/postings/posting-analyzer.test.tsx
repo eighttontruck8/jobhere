@@ -78,7 +78,6 @@ describe("PostingAnalyzer", () => {
     fireEvent.change(screen.getByLabelText("채용 공고 이미지"), {
       target: { files: [new File(["image"], "posting.gif", { type: "image/gif" })] },
     });
-    fireEvent.click(screen.getByRole("button", { name: "분석 시작" }));
 
     expect(screen.getByRole("alert").textContent).toContain("JPEG 또는 PNG");
     expect(fetcher).not.toHaveBeenCalled();
@@ -103,15 +102,29 @@ describe("PostingAnalyzer", () => {
       },
     });
 
+    fireEvent.paste(window, {
+      clipboardData: {
+        items: [{
+          kind: "file",
+          type: "image/jpeg",
+          getAsFile: () => new File(["second"], "image.jpg", { type: "image/jpeg" }),
+        }],
+      },
+    });
+
     expect(screen.getByRole("tab", { name: "이미지로 분석" }).getAttribute("aria-selected")).toBe("true");
-    expect(screen.getByText("클립보드-이미지.png")).not.toBeNull();
+    expect(screen.getByText(/클립보드-이미지-1\.png/)).not.toBeNull();
+    expect(screen.getByText(/클립보드-이미지-2\.jpg/)).not.toBeNull();
+    expect(screen.getByText("2장의 스크린샷 첨부됨")).not.toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "분석 시작" }));
 
     await waitFor(() => expect(fetcher).toHaveBeenCalledOnce());
     const [, init] = fetcher.mock.calls[0];
-    const image = (init?.body as FormData).get("image") as File;
-    expect(image.name).toBe("클립보드-이미지.png");
-    expect(image.type).toBe("image/png");
+    const images = (init?.body as FormData).getAll("images") as File[];
+    expect(images.map(({ name }) => name)).toEqual([
+      "클립보드-이미지-1.png",
+      "클립보드-이미지-2.jpg",
+    ]);
     expect(push).toHaveBeenCalledWith("/postings/review");
   });
 

@@ -3,11 +3,15 @@ export interface LinkSourceInput {
   url: string;
 }
 
-export interface ImageSourceInput {
-  kind: "image";
+export interface ImageAssetInput {
   mimeType: string;
   sizeBytes: number;
   data: Uint8Array;
+}
+
+export interface ImageSourceInput {
+  kind: "image";
+  images: ImageAssetInput[];
 }
 
 export interface PdfSourceInput {
@@ -32,11 +36,16 @@ export interface TextRawContent {
   sourceUrl: string;
 }
 
-export interface ImageRawContent {
-  kind: "image";
+export interface ImageAssetRawContent {
   mimeType: "image/jpeg" | "image/png";
   data: Uint8Array;
   dataUrl: string;
+}
+
+export interface ImageRawContent {
+  kind: "image";
+  images: ImageAssetRawContent[];
+  sourceUrl?: string;
 }
 
 export type RawContent = TextRawContent | ImageRawContent;

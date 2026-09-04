@@ -36,18 +36,21 @@ async function parseMultipartRequest(
   request: Request,
 ): Promise<ParsedAnalysisRequest> {
   const form = await request.formData();
-  const image = form.get("image");
+  const legacyImage = form.get("image");
+  const images = form.getAll("images");
+  if (legacyImage instanceof File) images.push(legacyImage);
 
-  if (!(image instanceof File)) {
-    throw new RequestBodyValidationError(["image"]);
+  if (images.length === 0 || !images.every((image) => image instanceof File)) {
+    throw new RequestBodyValidationError(["images"]);
   }
 
-  const data = new Uint8Array(await readFileBytes(image));
   const input: ImageSourceInput = {
     kind: "image",
-    mimeType: image.type,
-    sizeBytes: image.size,
-    data,
+    images: await Promise.all(images.map(async (image) => ({
+      mimeType: image.type,
+      sizeBytes: image.size,
+      data: new Uint8Array(await readFileBytes(image)),
+    }))),
   };
 
   return {
@@ -95,8 +98,8 @@ function serializeOriginalSource(source: SourceInput) {
 
   return {
     kind: source.kind,
-    mimeType: source.mimeType,
-    sizeBytes: source.sizeBytes,
+    imageCount: source.images.length,
+    totalSizeBytes: source.images.reduce((sum, image) => sum + image.sizeBytes, 0),
   };
 }
 

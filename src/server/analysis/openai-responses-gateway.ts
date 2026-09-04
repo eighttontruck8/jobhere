@@ -3,8 +3,10 @@ import type { RawContent } from "./source-parser";
 
 export const JOB_POSTING_EXTRACTION_INSTRUCTIONS = `
 채용 공고 원문에서 직무별 공고를 추출해 JSON으로 반환하세요.
+여러 이미지가 입력되면 하나의 채용 공고를 위에서 아래로 이어서 캡처한 것으로 보고 입력 순서대로 함께 분석하세요.
 enterpriseType은 PUBLIC 또는 PRIVATE, criterion type은 LANGUAGE, KOREAN_HISTORY, COMPUTER_SKILL, OTHER_CERT,
 requiredFlag는 REQUIRED 또는 OPTIONAL만 사용하세요. 알 수 없는 nullable 필드는 null,
+deadline은 반드시 연도를 포함한 ISO 8601 형식(예: 2026-09-07T16:00:00+09:00)으로 반환하고, 마감일을 알 수 없으면 null로 반환하세요.
 평가 기준을 찾지 못하면 criteria는 빈 배열로 반환하세요. 원문에 여러 직무가 있으면 각각 분리하세요.
 recruitmentCount에는 모집 인원을 원문 표현대로 간결하게 넣고(예: "3명", "00명"), 없으면 null로 반환하세요.
 details는 긴 문단 대신 파악 가능한 내용만 섹션별 한국어 개조식으로 반환하세요. 모든 섹션을 억지로 만들지 마세요.
@@ -51,7 +53,10 @@ export const JOB_POSTINGS_JSON_SCHEMA = {
           company: { type: ["string", "null"] },
           jobRole: { type: ["string", "null"] },
           title: { type: "string" },
-          deadline: { type: ["string", "null"] },
+          deadline: {
+            type: ["string", "null"],
+            description: "지원 마감 일시. 연도를 포함한 ISO 8601 형식 또는 null",
+          },
           jobCategory: { type: ["string", "null"] },
           recruitmentCount: { type: ["string", "null"] },
           details: { type: ["string", "null"] },
@@ -164,7 +169,11 @@ function buildUserContent(content: RawContent) {
 
   return [
     { type: "input_text", text: JOB_POSTING_EXTRACTION_INSTRUCTIONS },
-    { type: "input_image", image_url: content.dataUrl, detail: "high" },
+    ...content.images.map((image) => ({
+      type: "input_image",
+      image_url: image.dataUrl,
+      detail: "high",
+    })),
   ];
 }
 

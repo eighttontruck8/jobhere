@@ -96,9 +96,10 @@ describe("OpenAiResponsesGateway", () => {
 
     await gateway.generateStructuredPostings({
       kind: "image",
-      mimeType: "image/png",
-      data: new Uint8Array([1, 2, 3]),
-      dataUrl: "data:image/png;base64,AQID",
+      images: [
+        { mimeType: "image/png", data: new Uint8Array([1, 2, 3]), dataUrl: "data:image/png;base64,AQID" },
+        { mimeType: "image/jpeg", data: new Uint8Array([4]), dataUrl: "data:image/jpeg;base64,BA==" },
+      ],
     });
 
     const body = JSON.parse(String(fetcher.mock.calls[0][1]?.body)) as {
@@ -106,11 +107,15 @@ describe("OpenAiResponsesGateway", () => {
         content: Array<{ type: string; image_url?: string; detail?: string }>;
       }>;
     };
-    expect(body.input[0].content[1]).toEqual({
+    expect(body.input[0].content.slice(1)).toEqual([{
       type: "input_image",
       image_url: "data:image/png;base64,AQID",
       detail: "high",
-    });
+    }, {
+      type: "input_image",
+      image_url: "data:image/jpeg;base64,BA==",
+      detail: "high",
+    }]);
     expect(JSON.stringify(body)).not.toContain("1,2,3");
   });
 

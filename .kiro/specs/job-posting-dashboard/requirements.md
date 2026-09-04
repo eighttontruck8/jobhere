@@ -82,9 +82,9 @@
 
 #### Acceptance Criteria
 
-1. WHEN 사용자가 웹 또는 카페 링크를 입력하고 분석을 요청하면, THE Analysis_Engine SHALL 30초 이내에 해당 소스로부터 구조화된 Job_Posting 정보를 추출한다.
-2. WHEN 사용자가 지원 형식(JPEG, PNG)이며 크기가 10MB 이하인 스크린샷 이미지를 제출하고 분석을 요청하면, THE Analysis_Engine SHALL 30초 이내에 비전 지원 LLM 또는 OCR을 사용하여 구조화된 Job_Posting 정보를 추출한다.
-2-1. WHEN 사용자가 클립보드에 복사된 지원 형식의 스크린샷 이미지를 붙여넣으면, THE System SHALL 사용자가 이미지 파일을 별도로 저장하지 않아도 해당 이미지를 분석 입력으로 첨부한다.
+1. WHEN 사용자가 웹 또는 카페 링크를 입력하고 분석을 요청하면, THE Analysis_Engine SHALL 60초 이내에 해당 소스로부터 구조화된 Job_Posting 정보를 추출한다.
+2. WHEN 사용자가 지원 형식(JPEG, PNG)이며 크기가 10MB 이하인 스크린샷 이미지를 제출하고 분석을 요청하면, THE Analysis_Engine SHALL 60초 이내에 비전 지원 LLM 또는 OCR을 사용하여 구조화된 Job_Posting 정보를 추출한다.
+2-1. WHEN 사용자가 클립보드에 복사된 지원 형식의 스크린샷 이미지를 한 번 이상 붙여넣으면, THE System SHALL 사용자가 이미지 파일을 별도로 저장하지 않아도 최대 10장·전체 30MB까지 하나의 분석 입력으로 순서대로 첨부한다.
 3. WHERE 소스에 복수의 직무가 포함된 경우, THE Analysis_Engine SHALL 발견된 각 직무를 개별 Job_Posting 항목으로 최대 50개까지 추출한다.
 4. WHERE Role_Filter가 설정된 경우, THE Analysis_Engine SHALL Role_Filter에 일치하는 직무만 추출한다.
 5. WHERE Role_Filter가 설정되지 않은 경우, THE Analysis_Engine SHALL 소스에서 발견된 모든 직무를 추출한다.
@@ -92,6 +92,7 @@
 7. IF 입력된 링크에 접근할 수 없거나 유효하지 않으면, THEN THE System SHALL 소스 접근 실패를 알리는 오류 메시지를 사용자에게 표시한다.
 8. IF 제출된 이미지가 지원 형식(JPEG, PNG)이 아니거나 크기가 10MB를 초과하면, THEN THE System SHALL 이미지가 처리 조건을 충족하지 않음을 알리는 오류 메시지를 사용자에게 표시하고 분석을 수행하지 않는다.
 9. WHEN 링크 분석이 성공하면, THE Analysis_Engine SHALL 모집인원과 핵심 상세 내용을 추출하고 실제 접근한 최종 원본 URL을 Job_Posting draft에 보존한다.
+9-1. IF 링크의 HTML에서 실질적인 채용 공고 텍스트를 찾지 못하면, THEN THE Analysis_Engine SHALL 페이지의 지원 이미지 또는 지원되는 클라이언트 렌더링 공고 이미지를 수집하여 비전 분석을 시도한다.
 10. THE Analysis_Engine SHALL 파악 가능한 상세 내용만 표준 용어의 섹션별 개조식 문장으로 구성하고, 분류되지 않는 유용한 정보는 기타로 보존한다. 같은 의미의 섹션 제목은 하나의 표준 용어로 통일한다.
 11. THE Analysis_Engine SHALL 전형순서를 단계별 한 줄로 구성하고 날짜를 `M/D(요일)` 형식으로, 일정과 장소 사이를 `|`로 구분하며 실제 장소를 `📍지명`, 온라인·화상 전형을 `💻비대면`으로 표시한다. 온라인 이의제기·채용 검증·합격 발표·서류 등록 등 행정 절차는 제외한다.
 

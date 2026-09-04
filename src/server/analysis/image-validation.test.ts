@@ -1,9 +1,12 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
 import {
+  MAXIMUM_IMAGE_COUNT,
   MAXIMUM_IMAGE_SIZE_BYTES,
+  MAXIMUM_TOTAL_IMAGE_SIZE_BYTES,
   SUPPORTED_IMAGE_MIME_TYPES,
   UnsupportedImageError,
+  validateImageCollectionMetadata,
   validateImageMetadata,
 } from "./image-validation";
 
@@ -78,5 +81,20 @@ describe("validateImageMetadata", () => {
     expect(() =>
       validateImageMetadata(mimeType as string, sizeBytes as number),
     ).toThrow(expect.objectContaining({ reason }));
+  });
+});
+
+describe("validateImageCollectionMetadata", () => {
+  it("여러 이미지의 개수와 전체 용량을 제한한다", () => {
+    expect(() => validateImageCollectionMetadata(
+      Array.from({ length: MAXIMUM_IMAGE_COUNT + 1 }, () => ({ mimeType: "image/png", sizeBytes: 1 })),
+    )).toThrow(expect.objectContaining({ reason: "TOO_MANY_IMAGES" }));
+
+    expect(() => validateImageCollectionMetadata([
+      { mimeType: "image/png", sizeBytes: MAXIMUM_IMAGE_SIZE_BYTES },
+      { mimeType: "image/png", sizeBytes: MAXIMUM_IMAGE_SIZE_BYTES },
+      { mimeType: "image/png", sizeBytes: MAXIMUM_IMAGE_SIZE_BYTES },
+      { mimeType: "image/png", sizeBytes: MAXIMUM_TOTAL_IMAGE_SIZE_BYTES - MAXIMUM_IMAGE_SIZE_BYTES * 3 + 1 },
+    ])).toThrow(expect.objectContaining({ reason: "TOTAL_SIZE_EXCEEDED" }));
   });
 });

@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import {
+  extractPageImageUrls,
   extractTextFromHtml,
   LinkParser,
   SourceAccessError,
@@ -42,6 +43,21 @@ describe("extractTextFromHtml", () => {
   });
 });
 
+describe("extractPageImageUrls", () => {
+  it("지연 로딩된 공고 이미지를 우선하고 장식 이미지를 제외한다", () => {
+    const urls = extractPageImageUrls(`
+      <img src="/assets/logo.png" width="80" height="40">
+      <img src="/placeholder.png" data-src="/uploads/job-posting.png" width="1000" height="1800" alt="채용 공고">
+      <img src="https://cdn.example.com/content/detail.jpg">
+    `, new URL("https://careers.example.com/jobs/1"));
+
+    expect(urls.map(String)).toEqual([
+      "https://careers.example.com/uploads/job-posting.png",
+      "https://cdn.example.com/content/detail.jpg",
+    ]);
+  });
+});
+
 describe("LinkParser", () => {
   it("링크 소스만 지원한다", () => {
     const parser = new LinkParser({ fetcher: vi.fn() as LinkFetcher });
@@ -50,9 +66,7 @@ describe("LinkParser", () => {
     expect(
       parser.supports({
         kind: "image",
-        mimeType: "image/png",
-        sizeBytes: 1,
-        data: new Uint8Array(),
+        images: [{ mimeType: "image/png", sizeBytes: 1, data: new Uint8Array([1]) }],
       }),
     ).toBe(false);
   });
@@ -93,6 +107,76 @@ describe("LinkParser", () => {
     await expect(
       parser.extractRawContent({ kind: "link", url: "https://example.com/job.txt" }),
     ).resolves.toMatchObject({ text: "채용 공고 원문\n두 번째 줄" });
+  });
+
+  it("실질적인 본문 텍스트가 없으면 페이지 이미지를 비전 입력으로 반환한다", async () => {
+    const fetcher = vi.fn<LinkFetcher>(async (input) => {
+      const url = String(input);
+      if (url.endsWith("posting.png")) {
+        return new Response(new Uint8Array([1, 2, 3]), {
+          headers: { "content-type": "image/png", "content-length": "3" },
+        });
+      }
+      return response(`
+        <html><body>
+          <nav>홈 채용공고 입사지원</nav>
+          <img data-src="/uploads/posting.png" width="1000" height="1800" alt="채용 공고문">
+        </body></html>
+      `, {
+        headers: { "content-type": "text/html; charset=utf-8" },
+        url: "https://careers.example.com/jobs/1",
+      });
+    });
+    const parser = new LinkParser({ fetcher });
+
+    await expect(
+      parser.extractRawContent({ kind: "link", url: "https://careers.example.com/jobs/1" }),
+    ).resolves.toEqual({
+      kind: "image",
+      images: [{
+        mimeType: "image/png",
+        data: new Uint8Array([1, 2, 3]),
+        dataUrl: "data:image/png;base64,AQID",
+      }],
+      sourceUrl: "https://careers.example.com/jobs/1",
+    });
+    expect(fetcher).toHaveBeenCalledTimes(2);
+  });
+
+  it("KT처럼 클라이언트에서 공고를 그리는 페이지는 공개 데이터에서 이미지를 찾는다", async () => {
+    const fetcher = vi.fn<LinkFetcher>(async (input) => {
+      const url = String(input);
+      if (url.includes("/api/recruit?")) {
+        return response(JSON.stringify({
+          data: [{
+            recruitNoticeSn: 263897,
+            contents: '<p><img src="https://kt.recruiter.co.kr/upload/posting.jpg"></p>',
+          }],
+        }), { headers: { "content-type": "application/json" } });
+      }
+      if (url.endsWith("posting.jpg")) {
+        return new Response(new Uint8Array([0xff, 0xd8, 0xff]), {
+          headers: { "content-type": "image/jpeg" },
+        });
+      }
+      return response('<html><body><div id="__nuxt"></div></body></html>', {
+        headers: { "content-type": "text/html" },
+        url: "https://recruit.kt.com/careers/263897",
+      });
+    });
+    const parser = new LinkParser({ fetcher });
+
+    const result = await parser.extractRawContent({
+      kind: "link",
+      url: "https://recruit.kt.com/careers/263897",
+    });
+
+    expect(result).toMatchObject({
+      kind: "image",
+      sourceUrl: "https://recruit.kt.com/careers/263897",
+      images: [{ mimeType: "image/jpeg" }],
+    });
+    expect(fetcher).toHaveBeenCalledTimes(3);
   });
 
   it.each([

@@ -7,13 +7,17 @@ export type SupportedImageMimeType =
   (typeof SUPPORTED_IMAGE_MIME_TYPES)[number];
 
 export const MAXIMUM_IMAGE_SIZE_BYTES = 10 * 1024 * 1024;
+export const MAXIMUM_IMAGE_COUNT = 10;
+export const MAXIMUM_TOTAL_IMAGE_SIZE_BYTES = 30 * 1024 * 1024;
 
 export type UnsupportedImageReason =
   | "UNSUPPORTED_FORMAT"
   | "INVALID_SIZE"
   | "EMPTY_IMAGE"
   | "SIZE_EXCEEDED"
-  | "SIZE_MISMATCH";
+  | "SIZE_MISMATCH"
+  | "TOO_MANY_IMAGES"
+  | "TOTAL_SIZE_EXCEEDED";
 
 export class UnsupportedImageError extends Error {
   constructor(
@@ -71,4 +75,32 @@ export function validateImageMetadata(
   }
 
   return { mimeType, sizeBytes };
+}
+
+export function validateImageCollectionMetadata(
+  images: readonly { mimeType: string; sizeBytes: number }[],
+): ValidatedImageMetadata[] {
+  if (images.length === 0) {
+    throw new UnsupportedImageError(
+      "EMPTY_IMAGE",
+      "내용이 있는 이미지를 한 장 이상 올려 주세요.",
+    );
+  }
+  if (images.length > MAXIMUM_IMAGE_COUNT) {
+    throw new UnsupportedImageError(
+      "TOO_MANY_IMAGES",
+      `이미지는 최대 ${MAXIMUM_IMAGE_COUNT}장까지 올릴 수 있습니다.`,
+    );
+  }
+
+  const validated = images.map(({ mimeType, sizeBytes }) =>
+    validateImageMetadata(mimeType, sizeBytes));
+  const totalSizeBytes = validated.reduce((sum, image) => sum + image.sizeBytes, 0);
+  if (totalSizeBytes > MAXIMUM_TOTAL_IMAGE_SIZE_BYTES) {
+    throw new UnsupportedImageError(
+      "TOTAL_SIZE_EXCEEDED",
+      "이미지 전체 용량은 30MB 이하만 올릴 수 있습니다.",
+    );
+  }
+  return validated;
 }

@@ -8,9 +8,7 @@ describe("ImageParser", () => {
     expect(
       parser.supports({
         kind: "image",
-        mimeType: "image/png",
-        sizeBytes: 1,
-        data: new Uint8Array([1]),
+        images: [{ mimeType: "image/png", sizeBytes: 1, data: new Uint8Array([1]) }],
       }),
     ).toBe(true);
     expect(
@@ -26,18 +24,14 @@ describe("ImageParser", () => {
 
     const result = await parser.extractRawContent({
       kind: "image",
-      mimeType,
-      sizeBytes: data.byteLength,
-      data,
+      images: [{ mimeType, sizeBytes: data.byteLength, data }],
     });
 
     expect(result).toEqual({
       kind: "image",
-      mimeType,
-      data,
-      dataUrl: `data:${mimeType};base64,${base64}`,
+      images: [{ mimeType, data, dataUrl: `data:${mimeType};base64,${base64}` }],
     });
-    expect(result.data).not.toBe(data);
+    expect(result.images[0].data).not.toBe(data);
   });
 
   it("선언한 크기와 실제 바이트 크기가 다르면 변환하지 않는다", async () => {
@@ -47,9 +41,7 @@ describe("ImageParser", () => {
     await expect(
       parser.extractRawContent({
         kind: "image",
-        mimeType: "image/png",
-        sizeBytes: 2,
-        data: new Uint8Array([1]),
+        images: [{ mimeType: "image/png", sizeBytes: 2, data: new Uint8Array([1]) }],
       }),
     ).rejects.toMatchObject({
       name: "UnsupportedImageError",
@@ -82,7 +74,7 @@ describe("ImageParser", () => {
     const parser = new ImageParser(encoder);
 
     await expect(
-      parser.extractRawContent({ kind: "image", ...input }),
+      parser.extractRawContent({ kind: "image", images: [input] }),
     ).rejects.toMatchObject({ reason: input.reason });
     expect(encoder).not.toHaveBeenCalled();
   });
@@ -96,5 +88,19 @@ describe("ImageParser", () => {
         url: "https://example.com/job",
       }),
     ).rejects.toThrow("ImageParser는 이미지 소스만 처리할 수 있습니다.");
+  });
+
+  it("여러 이미지를 입력 순서대로 비전 데이터로 변환한다", async () => {
+    const parser = new ImageParser();
+    const result = await parser.extractRawContent({
+      kind: "image",
+      images: [
+        { mimeType: "image/png", sizeBytes: 1, data: new Uint8Array([1]) },
+        { mimeType: "image/jpeg", sizeBytes: 1, data: new Uint8Array([2]) },
+      ],
+    });
+
+    expect(result.images).toHaveLength(2);
+    expect(result.images.map(({ mimeType }) => mimeType)).toEqual(["image/png", "image/jpeg"]);
   });
 });
